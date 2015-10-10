@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>BlogImages/app.png</file>
+        <file>BlogImages/close.png</file>
+        <file>BlogImages/down.png</file>
+        <file>BlogImages/lock.png</file>
+        <file>BlogImages/logo.png</file>
+        <file>BlogImages/min.png</file>
+        <file>BlogImages/shirt.png</file>
+        <file>BlogImages/fullscreen.png</file>
+        <file>BlogImages/unlock.png</file>
+        <file>default.qss</file>
+        <file>BlogImages/001.jpg</file>
+        <file>BlogImages/hello.jpg</file>
+        <file>Image/bg0.png</file>
+        <file>Image/bg1.png</file>
+        <file>Image/C++.png</file>
+        <file>Image/NewBlog.png</file>
+        <file>Image/NewCustom.png</file>
+        <file>Data/blogSkim.html</file>
+    </qresource>
+</RCC>

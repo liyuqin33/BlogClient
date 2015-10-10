@@ -1,0 +1,78 @@
+QFrame#titleBar{
+    background-color: #5789dc;
+}
+
+QToolButton{
+    background-color: transparent;
+    color: rgb(92, 113, 134);
+}
+
+QToolButton:hover{
+    background-color: #5789dc;
+    color: white;
+    border: 1px;
+}
+
+QToolButton:disabled{
+    background-color: gray;
+    border: 1px;
+}
+
+
+
+QToolButton::menu-button {
+    border: none;
+}
+
+QToolButton::menu-arrow {
+    image: none;
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}
+
+
+QToolButton#closeButton{
+
+    background-color: transparent;
+    color: white;
+}
+
+QToolButton#closeButton:hover{
+    background-color: red;
+    border: 1px;
+}
+
+
+
+QPushButton#checkable{
+    margin-left: 15px;
+    margin-right: 15px;
+    font: 15px;
+    border: none;
+    color: white;
+}
+
+QPushButton#checkable:hover{
+    color: white;
+    border-bottom: 3px solid rgba(0, 211, 197, 255);
+}
+
+QPushButton#checkable:checked{
+    color: white;
+    border-bottom: 3px solid rgba(0, 211, 197, 255);
+}
+
+QPushButton#checkable:pressed{
+    color: white;
+    border-bottom: 3px solid rgba(0, 211, 197, 255);
+}
+
+QPushButton#checkable:disabled{
+    background-color: gray;
+}
+
+
+
+
