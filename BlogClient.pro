@@ -34,7 +34,7 @@ HEADERS  += mainwindow.h \
     WebCorrespond/article.h
 
 RESOURCES += \
-    BlogClient.qrc
+	BlogClient.qrc
 
 CONFIG += c++11
 

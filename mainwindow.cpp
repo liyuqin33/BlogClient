@@ -1,20 +1,32 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 
+/*
+在构造函数里只初始化好必须的部件（layout，splashLabel）
+其他主要的部件由main函数调用初始化，使欢迎界面掩盖初始化速度慢的事实
+*/
 MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
+	: QFrame(parent)
+	//尽可能使用初始值列表分配有意义的值！！！
+	, _direction(NONE)
+	, _isLeftPressed(false)
+	, _titleBar(nullptr)
+	, _functionWidget(nullptr)
+	, _blogEditArea(nullptr)
+	, _mainLayout(new QVBoxLayout(this))
+	, _splashLabel(new QLabel())
 {
     _direction = NONE;
     _isLeftPressed = false;
-    this->setWindowFlags(Qt::FramelessWindowHint);
+	//Qt::CustomizeWindowHint能使标题栏消失，并且可以拉伸窗口，但是原本是标题栏的地方还有一条白条
+	this->setWindowFlags(Qt::FramelessWindowHint);
+	this->setFrameStyle(QFrame::NoFrame);
     this->setMouseTracking(true);
     this->setMinimumSize(900,600);
 
-    initQss();
-    initUi();
-    initLayout();
-
-    initConnect();
-
+	_mainLayout->setContentsMargins(0,0,0,0);
+	_splashLabel->setPixmap(QPixmap(":/BlogImages/hello.jpg"));
+	_mainLayout->addWidget(_splashLabel);
+	this->setLayout(_mainLayout);
 }
 
 MainWindow::~MainWindow()
@@ -22,11 +34,23 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::waitForWebView()
+{
+	//断开连接
+	disconnect(_blogEditArea->editView(), &QWebView::loadFinished, this, &MainWindow::waitForWebView);
+	//显示
+	_mainLayout->removeWidget(_splashLabel);
+	_splashLabel->setAttribute(Qt::WA_DeleteOnClose, true);
+	_splashLabel->close();
+	_splashLabel = nullptr;
+	initLayout();
+	initConnect();
+}
+
 void MainWindow::initUi()
 {
     _titleBar = new TitleBar(this);
     _titleBar->setObjectName("titleBar");
-
 
     _functionWidget = new QStackedWidget(this);
     /*然后在这里加入你们的功能widget*/
@@ -34,19 +58,17 @@ void MainWindow::initUi()
 
     BlogEditArea::initBlogFrame();
     _blogEditArea = new BlogEditArea;
+	connect(_blogEditArea->editView(), &QWebView::loadFinished, this, &MainWindow::waitForWebView);
 
     _functionWidget->addWidget(_blogEditArea);
 
-
+	initQss();
 }
 
 void MainWindow::initLayout()
 {
-    _mainLayout = new QVBoxLayout(this);
-    _mainLayout->addWidget(_titleBar);
-    _mainLayout->addWidget(_functionWidget);
-    _mainLayout->setContentsMargins(0,0,0,0);
-    this->setLayout(_mainLayout);
+	_mainLayout->addWidget(_titleBar);
+	_mainLayout->addWidget(_functionWidget);
 }
 
 void MainWindow::initConnect()

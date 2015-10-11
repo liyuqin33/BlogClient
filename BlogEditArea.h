@@ -40,6 +40,8 @@ public:
 	explicit BlogEditArea(QWidget *parent = nullptr);
 	~BlogEditArea();
 	bool customReviewer(const QString &custom);
+
+	EditView* editView(){return _editView;}
 protected:
 	void closeEvent(QCloseEvent *event)override;
 
@@ -97,7 +99,7 @@ private:
 	static int LOCAL_ID_BEGIN;//新ID的起始位置
 
 	Ui::BlogEditArea *ui;
-	EditView *_editor;
+	EditView *_editView;
 	QStandardItemModel *_blogHeadModel;
 	CustomFilterModel *_proxyModel;
 	bool _isUserCreateArticle;//新建文件时会触发BlogHeadView的currentIndexChanged的信号，简单屏蔽一下

@@ -1,7 +1,7 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QWidget>
+#include <QFrame>
 #include <QStackedWidget>
 #include <QFile>
 #include <QMouseEvent>
@@ -13,20 +13,24 @@
 #include "MyUtility.h"
 
 #define MARGIN 5
-class MainWindow : public QWidget
+class MainWindow : public QFrame
 {
     Q_OBJECT
 
 public:
     /*各种方向*/
     enum Direction {NONE, TOP, RIGHT, BOTTOM, LEFT, TOP_RIGHT, RIGHT_BOTTOM, BOTTOM_LEFT, LEFT_TOP};
-    MainWindow(QWidget *parent = 0);
+	MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+	void initUi();
+private slots:
+	void waitForWebView();
+
 private:
-    void initUi();
+	void initQss();
     void initLayout();
     void initConnect();
-    void initQss();
 
     Direction _direction;           //方向
     bool _isLeftPressed;            //左键
@@ -36,6 +40,9 @@ private:
     QStackedWidget *_functionWidget;
     BlogEditArea *_blogEditArea;
     QVBoxLayout *_mainLayout;
+
+	//欢迎Label
+	QLabel *_splashLabel;
 
     Direction judgeDirection(int x, int y);      //判断鼠标方向
     void setCursorStyle(Direction dir);         //改变光标样式

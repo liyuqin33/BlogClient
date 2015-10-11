@@ -49,28 +49,30 @@ QString BlogEditArea::articleHtmlFilePath(QModelIndex index)
 BlogEditArea::BlogEditArea(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::BlogEditArea),
-	_editor(new EditView(this)),
+	_editView(new EditView(this)),
 	_blogHeadModel(new QStandardItemModel(this)),
 	_proxyModel(new CustomFilterModel(this)),
 	_isUserCreateArticle(false)
 {
 	ui->setupUi(this);
 	ui->userFrame->hide();
-	ui->editorContainLayout->addWidget(_editor);
+	ui->editorContainLayout->addWidget(_editView);
 
 	Q_ASSERT(!BLOG_FRAME.isEmpty());//必须先读取博客预览界面的框架
 
-	//按钮（以后再改）
+	//按钮
 	QMenu *btnMenu = new QMenu(this);
-	auto *newBlogAction = new QAction(QIcon(":/Image/NewBlog.png"), "新建文章", this);
-	connect(newBlogAction, SIGNAL(triggered()), SLOT(userCreateArticle()));
-	btnMenu->addAction(newBlogAction);
+	auto crateArticleAction = new QAction(QIcon(":/Image/NewBlog.png"), "新建文章", this);
+	connect(crateArticleAction, SIGNAL(triggered()), SLOT(userCreateArticle()));
+	btnMenu->addAction(crateArticleAction);
 
 	auto *createCustomAction = new QAction(QIcon(":/Image/NewCustom.png"), "新建自定义分类", this);
 	connect(createCustomAction, &QAction::triggered, this, &BlogEditArea::userCreateCustom);
 	btnMenu->addAction(createCustomAction);
 
 	ui->createBtn->setMenu(btnMenu);
+	//默认新建文章按钮
+	connect(ui->createArticleBtn, &QPushButton::pressed, this, &BlogEditArea::userCreateArticle);
 
 	ui->blogHeadView->setDragEnabled(true);//使用QListView默认的拖拽!!!
 
@@ -91,12 +93,8 @@ BlogEditArea::BlogEditArea(QWidget *parent) :
 
 	//初始化状态
 	ui->customList->setCurrentRow(0);
-	_proxyModel->setFilterCustom(QString());
-	setCurrentArticle(ui->blogHeadView->currentIndex());
-
-	//背景
-	hideEditor();
-
+	//浏览窗口QWebView第一次加载网页时需要较长时间，利用欢迎界面，在初始化的时候预加载一次
+	ui->blogHeadView->setCurrentIndex(_proxyModel->index(0, 0));
 	ui->saveBtn->hide();
 	ui->cancelBtn->hide();
 }
@@ -283,20 +281,20 @@ void BlogEditArea::setEditorVisible(bool isVisible)
 void BlogEditArea::showEditor()
 {
 	ui->bgLabel->hide();
-	_editor->show();
+	_editView->show();
 }
 
 void BlogEditArea::hideEditor()
 {
-	QSize s = _editor->size();
-	_editor->hide();
+	QSize s = _editView->size();
+	_editView->hide();
 	ui->bgLabel->resize(s);
 	ui->bgLabel->show();
 }
 
 void BlogEditArea::editArticle(const QString &title)
 {
-	Article *article = _editor->getArticle();
+	Article *article = _editView->getArticle();
 	article->setTitle(title);
 
 	if (title.isEmpty())
@@ -313,8 +311,8 @@ void BlogEditArea::editArticle(const QString &title)
 
 		QString headerStr("<div class=\"articleContent\">");
 		int beg = pageHtml.indexOf(headerStr) + headerStr.size();//内容开头
-		QRegExp endRegExp("</div>\\s+<div class=\"categoryCount\">");
-		int end = endRegExp.indexIn(pageHtml);//内容结尾
+		QRegExp endRegExp("</div>");
+		int end = endRegExp.indexIn(pageHtml, beg);//内容结尾
 		article->setContent(pageHtml.mid(beg, end - beg));//设置内容
 	}
 
@@ -326,13 +324,13 @@ void BlogEditArea::editArticle(const QString &title)
 
 	//当editor读取编辑页面时，网页中的Javascript函数（自定义，在postArticle.js）
 	//会使用_editor->article来初始化网页中文章的标题和内容
-	_editor->load(POST_ARTICLE_HTML_URL());
+	_editView->load(POST_ARTICLE_HTML_URL());
 }
 
 void BlogEditArea::saveArticle(Article *article)
 {
 	//停止正在阅读的页面，可能就是当前编写的页面（会崩溃？有必要停止吗？）
-	_editor->stop();
+	_editView->stop();
 
 	//假定正在编写的文件是当前文件！！！
 	_proxyModel->setData(ui->blogHeadView->currentIndex(),
@@ -398,7 +396,7 @@ void BlogEditArea::setCurrentArticle(const QModelIndex &proxyIndex)
 	//打开保存文件
 	QString articlePath = articleHtmlFilePath(ui->blogHeadView->currentIndex());
 	Q_ASSERT(QFileInfo::exists(articlePath));
-	_editor->load(QUrl::fromLocalFile(articlePath));
+	_editView->load(QUrl::fromLocalFile(articlePath));
 /*
  *	setHtml会更快吗？
  *
@@ -452,16 +450,16 @@ void BlogEditArea::on_saveBtn_clicked()
 {
 	//调用网页里JavaScript的一个函数（在postArticle.js）
 	//它是我自己写的，它将文章的标题、内容赋值到article.title和article.content
-	_editor->page()->mainFrame()->evaluateJavaScript("updateArticle()");
+	_editView->page()->mainFrame()->evaluateJavaScript("updateArticle()");
 	//看到输出之后就会清楚前端发送的数据是怎样的HTML格式的数据
-	qDebug() << "Title " << _editor->getArticle()->title() << endl
-			 << "Content " << _editor->getArticle()->content();
+	qDebug() << "Title " << _editView->getArticle()->title() << endl
+			 << "Content " << _editView->getArticle()->content();
 
-	if (_editor->getArticle()->title().isEmpty())
+	if (_editView->getArticle()->title().isEmpty())
 	{
 		QMessageBox::warning(this, "标题不能为空", "文章标题不能为空！");
 		return ;
 	}
 
-	saveArticle(_editor->getArticle());
+	saveArticle(_editView->getArticle());
 }

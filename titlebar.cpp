@@ -1,4 +1,4 @@
-#include "titlebar.h"
+﻿#include "titlebar.h"
 
 TitleBar::TitleBar(QWidget *parent) : QFrame(parent)
 {

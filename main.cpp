@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include <QApplication>
 #include <QDateTime>
 #include <QSplashScreen>
@@ -6,25 +6,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QSplashScreen *hello = new QSplashScreen(QPixmap(":/BlogImages/hello.jpg"));
-    hello->show();
-
-    a.processEvents();
-
-    QDateTime n = QDateTime::currentDateTime();
-    QDateTime now;
-    do
-    {
-       now = QDateTime::currentDateTime();
-    } while (n.secsTo(now) <= 1);
-
     MainWindow w;
-    w.show();
-
-
-
-
-
-    hello->finish(&w);
+	w.show();//MainWindow现在只有label并且只显示label
+	a.processEvents();//处理paintEvent
+	w.initUi();//初始化主要部件
     return a.exec();
 }
