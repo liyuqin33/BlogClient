@@ -1,5 +1,6 @@
 ﻿#include "splashwindow.h"
 #include <QHBoxLayout>
+#include <QDebug>
 
 SplashWindow::SplashWindow()
 	: QWidget(nullptr)
@@ -7,11 +8,10 @@ SplashWindow::SplashWindow()
 	, _showWindow(nullptr)
 {
 	_splashLabel->setPixmap(QPixmap(":/BlogImages/hello.jpg"));
+	_splashLabel->setScaledContents(true);
 	QHBoxLayout *layout = new QHBoxLayout(this);
 	layout->setContentsMargins(0, 0, 0, 0);
-	layout->setSpacing(0);
 	layout->addWidget(_splashLabel);
-	setLayout(layout);
 	this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -23,7 +23,7 @@ void SplashWindow::setShowWindow(QWidget *showWindow)
 void SplashWindow::finish()
 {
 	Q_ASSERT(_showWindow != nullptr);
-	_showWindow->show();
+	_showWindow->showMaximized();
 	this->close();
 }
 
