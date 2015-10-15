@@ -13,25 +13,24 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    titlebar.cpp \
     BlogEditArea.cpp \
     blogheadview.cpp \
     CustomFilterModel.cpp \
     customlistwidget.cpp \
     editview.cpp \
     MyUtility.cpp \
-    WebCorrespond/article.cpp
+    WebCorrespond/article.cpp \
+    splashwindow.cpp
 
-HEADERS  += mainwindow.h \
-    titlebar.h \
+HEADERS  += \
     BlogEditArea.h \
     blogheadview.h \
     CustomFilterModel.h \
     customlistwidget.h \
     editview.h \
     MyUtility.h \
-    WebCorrespond/article.h
+    WebCorrespond/article.h \
+    splashwindow.h
 
 RESOURCES += \
 	BlogClient.qrc

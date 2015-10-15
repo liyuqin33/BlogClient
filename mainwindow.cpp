@@ -9,18 +9,15 @@ MainWindow::MainWindow(QWidget *parent)
 	//尽可能使用初始值列表分配有意义的值！！！
 	, _direction(NONE)
 	, _isLeftPressed(false)
-	, _titleBar(nullptr)
+	, _toolBar(nullptr)
+	, _articleManagerBtn(nullptr)
+	, _messengerBtn(nullptr)
+	, _linkWidgetBtn(nullptr)
 	, _functionWidget(nullptr)
 	, _blogEditArea(nullptr)
-	, _mainLayout(new QVBoxLayout(this))
+	, _mainLayout(new QHBoxLayout(this))
 	, _splashLabel(new QLabel())
 {
-    _direction = NONE;
-    _isLeftPressed = false;
-	//Qt::CustomizeWindowHint能使标题栏消失，并且可以拉伸窗口，但是原本是标题栏的地方还有一条白条
-	this->setWindowFlags(Qt::FramelessWindowHint);
-	this->setFrameStyle(QFrame::NoFrame);
-    this->setMouseTracking(true);
     this->setMinimumSize(900,600);
 
 	_mainLayout->setContentsMargins(0,0,0,0);
@@ -47,10 +44,61 @@ void MainWindow::waitForWebView()
 	initConnect();
 }
 
+void MainWindow::setArticleManagerVisible(bool isVisible)
+{
+	setToolWidgetVisible(std::bind(&BlogEditArea::setArticleManagerVisible, std::placeholders::_1)
+						 , isVisible, _messengerBtn, _linkWidgetBtn);
+}
+
+void MainWindow::setMessengerVisible(bool isVisible)
+{
+
+}
+
+void MainWindow::setLinkWidgetVisible(bool isVisible)
+{
+
+}
+
+
+void MainWindow::setToolWidgetVisible(std::function<void(bool)> setVisible,
+						bool isVisible, QToolButton *excludeBtn1, QToolButton *excludeBtn2)
+{
+	if (isVisible)
+	{
+		if (excludeBtn1->isChecked()) excludeBtn1->click();
+		if (excludeBtn2->isChecked()) excludeBtn2->click();
+	}
+	setVisible(isVisible);
+}
+
+void MainWindow::initToolBar()
+{
+	_toolBar = new QToolBar(this);
+	_toolBar->setAllowedAreas(Qt::LeftToolBarArea);
+
+	_articleManagerBtn = new QToolButton(_toolBar);
+	_articleManagerBtn->setIcon(QIcon(":/Image/ArticleManager.png"));
+	_articleManagerBtn->setCheckable(true);
+	connect(_articleManagerBtn, &QToolButton::clicked, this, &MainWindow::setArticleManagerVisible);
+	_toolBar->addAction(_articleManagerBtn);
+
+	_messengerBtn = new QToolButton(this);
+	_messengerBtn->setIcon(QIcon(":/Image/Messenger.png"));
+	_messengerBtn->setCheckable(true);
+	connect(_messengerBtn, &QToolButton::clicked, this, &MainWindow::setMessengerVisible);
+	_toolBar->addAction(_messengerBtn);
+
+	_linkWidgetBtn = new QToolButton(this);
+	_linkWidgetBtn->setIcon(QIcon(":/Image/LinkWidget.png"));
+	_linkWidgetBtn->setCheckable(true);
+	connect(_linkWidgetBtn, &QToolButton::clicked, this, &MainWindow::setLinkWidgetVisible);
+	_toolBar->addAction(_linkWidgetBtn);
+}
+
 void MainWindow::initUi()
 {
-    _titleBar = new TitleBar(this);
-    _titleBar->setObjectName("titleBar");
+	_toolBar->setAllowedAreas(Qt::LeftToolBarArea);
 
     _functionWidget = new QStackedWidget(this);
     /*然后在这里加入你们的功能widget*/

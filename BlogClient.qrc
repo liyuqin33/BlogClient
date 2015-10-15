@@ -19,5 +19,8 @@
         <file>Image/NewCustom.png</file>
         <file>Data/blogSkim.html</file>
         <file>Image/arrow_down.png</file>
+        <file>Image/ArticleManager.png</file>
+        <file>Image/LinkWidget.png</file>
+        <file>Image/Messenger.png</file>
     </qresource>
 </RCC>

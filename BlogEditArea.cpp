@@ -13,7 +13,6 @@
 #include <QJsonArray>
 #include <algorithm>
 #include <QDebug>
-#include <functional>
 
 QString BlogEditArea::BLOG_FRAME = "";
 QVector<int> BlogEditArea::OBSOLETE_ID_STORE;
@@ -46,55 +45,55 @@ QString BlogEditArea::articleHtmlFilePath(QModelIndex index)
 				QString::number(index.data(CustomFilterModel::ID_ROLE()).toInt()));
 }
 
-BlogEditArea::BlogEditArea(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::BlogEditArea),
-	_editView(new EditView(this)),
-	_blogHeadModel(new QStandardItemModel(this)),
-	_proxyModel(new CustomFilterModel(this)),
-	_isUserCreateArticle(false)
+BlogEditArea::BlogEditArea(QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::BlogEditArea)
+	, _toolBar(new QFrame(this))
+	, _articleManagerBtn(new QToolButton(_toolBar))
+	, _messengerBtn(new QToolButton(_toolBar))
+	, _linkWidgetBtn(new QToolButton(_toolBar))
+	, _articleHeadView(nullptr)
+	, _editView(nullptr)
+	, _blogHeadModel(nullptr)
+	, _proxyModel(nullptr)
+	, _isUserCreateArticle(false)
 {
 	ui->setupUi(this);
-	ui->userFrame->hide();
+	initToolBar();
+	initArticleManager();
+	ui->toolWidgets->addWidget(new QFrame(this));
+	ui->toolWidgets->addWidget(new QFrame(this));
+	_editView = new EditView(this);
 	ui->editorContainLayout->addWidget(_editView);
 
-	Q_ASSERT(!BLOG_FRAME.isEmpty());//必须先读取博客预览界面的框架
+	_articleHeadView->setDragEnabled(true);//使用QListView默认的拖拽!!!
 
-	//按钮
-	QMenu *btnMenu = new QMenu(this);
-	auto crateArticleAction = new QAction(QIcon(":/Image/NewBlog.png"), "新建文章", this);
-	connect(crateArticleAction, SIGNAL(triggered()), SLOT(userCreateArticle()));
-	btnMenu->addAction(crateArticleAction);
+	//必须先读取博客预览界面的框架
+	initBlogFrame();
 
-	auto *createCustomAction = new QAction(QIcon(":/Image/NewCustom.png"), "新建自定义分类", this);
-	connect(createCustomAction, &QAction::triggered, this, &BlogEditArea::userCreateCustom);
-	btnMenu->addAction(createCustomAction);
+	//模型
+	_blogHeadModel = new QStandardItemModel(this);
+	_proxyModel = new CustomFilterModel(this);
 
-	ui->createBtn->setMenu(btnMenu);
-	//默认新建文章按钮
-	connect(ui->createArticleBtn, &QPushButton::pressed, this, &BlogEditArea::userCreateArticle);
-
-	ui->blogHeadView->setDragEnabled(true);//使用QListView默认的拖拽!!!
+	_proxyModel->setSourceModel(_blogHeadModel);
+	_articleHeadView->setModel(_proxyModel);
 
 	//读取用户信息
 	readInfo();
 
-	//模型
-	_proxyModel->setSourceModel(_blogHeadModel);
-	ui->blogHeadView->setModel(_proxyModel);
-
-	connect(ui->customList, &QListWidget::currentItemChanged,
+	connect(_customList, &QListWidget::currentItemChanged,
 			this, &BlogEditArea::selectCustom);
-	connect(ui->customList, &CustomListWidget::blogCustomChanged,
+	connect(_customList, &CustomListWidget::blogCustomChanged,
 			_proxyModel, &CustomFilterModel::setFilterCustom);
 
-	connect(ui->blogHeadView, &BlogHeadView::currentIndexChanged,
+	connect(_articleHeadView, &BlogHeadView::currentIndexChanged,
 			this, &BlogEditArea::setCurrentArticle);//检查当前是否选择了文档
 
 	//初始化状态
-	ui->customList->setCurrentRow(0);
+	_articleManagerBtn->setChecked(true);//默认打开文章管理器
+	_customList->setCurrentRow(0);//默认文章分类选中“全部”
 	//浏览窗口QWebView第一次加载网页时需要较长时间，利用欢迎界面，在初始化的时候预加载一次
-	ui->blogHeadView->setCurrentIndex(_proxyModel->index(0, 0));
+	_articleHeadView->setCurrentIndex(_proxyModel->index(0, 0));
 	ui->saveBtn->hide();
 	ui->cancelBtn->hide();
 }
@@ -106,7 +105,7 @@ BlogEditArea::~BlogEditArea()
 
 bool BlogEditArea::customReviewer(const QString &custom)
 {
-	auto list = ui->customList->findItems(custom, Qt::MatchFixedString);
+	auto list = _customList->findItems(custom, Qt::MatchFixedString);
 	return list.isEmpty();
 }
 
@@ -165,7 +164,7 @@ void BlogEditArea::readBlogInfo(QJsonObject blogInfoRoot)
 		QString custom = arrIt.key();
 		if (!custom.isEmpty())
 		{
-			ui->customList->addItem(custom);
+			_customList->addItem(custom);
 		}
 		QJsonArray arr = arrIt.value().toArray();
 		for (auto itemIt = arr.constBegin(); itemIt != arr.constEnd(); ++itemIt)
@@ -246,10 +245,10 @@ QJsonObject BlogEditArea::saveBlogInfo()
 	}
 
 	QJsonObject blogInfoRoot;
-	int customCount = ui->customList->count();
+	int customCount = _customList->count();
 	for (int i = 1; i != customCount; ++i)//从1开始（忽略“全部”）
 	{
-		QString custom = ui->customList->item(i)->data(Qt::DisplayRole).toString();
+		QString custom = _customList->item(i)->data(Qt::DisplayRole).toString();
 		blogInfoRoot[custom] = tempMap[custom];//可能有空数组
 	}
 	blogInfoRoot[""] = tempMap[""];
@@ -303,7 +302,7 @@ void BlogEditArea::editArticle(const QString &title)
 	}
 	else//如果是编辑已存在的文章
 	{
-		QFile articleFile(articleHtmlFilePath(ui->blogHeadView->currentIndex()));
+		QFile articleFile(articleHtmlFilePath(_articleHeadView->currentIndex()));
 		articleFile.open(QIODevice::ReadOnly | QIODevice::Text);
 		Q_ASSERT(articleFile.isOpen());
 		QString pageHtml = articleFile.readAll();//读取HTML
@@ -316,7 +315,7 @@ void BlogEditArea::editArticle(const QString &title)
 		article->setContent(pageHtml.mid(beg, end - beg));//设置内容
 	}
 
-	ui->blogInfoFrame->hide();
+	ui->toolWidgets->hide();
 	showEditor();
 	ui->editBtn->hide();
 	ui->saveBtn->show();
@@ -333,10 +332,10 @@ void BlogEditArea::saveArticle(Article *article)
 	_editView->stop();
 
 	//假定正在编写的文件是当前文件！！！
-	_proxyModel->setData(ui->blogHeadView->currentIndex(),
+	_proxyModel->setData(_articleHeadView->currentIndex(),
 									   article->title(), Qt::DisplayRole);
 	//保存为HTML文件，方便WebView直接Load？？？
-	QFile targetHtmlFile(articleHtmlFilePath(ui->blogHeadView->currentIndex()));
+	QFile targetHtmlFile(articleHtmlFilePath(_articleHeadView->currentIndex()));
 	targetHtmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
 	Q_ASSERT(targetHtmlFile.isOpen());
 	QTextStream out(&targetHtmlFile);
@@ -353,9 +352,9 @@ void BlogEditArea::userCreateArticle()
 
 	QStandardItem *articleItem = new QStandardItem();//文章条目
 
-	if (ui->customList->currentRow() != 0)//“全部”是第0个条目，不算分类
+	if (_customList->currentRow() != 0)//“全部”是第0个条目，不算分类
 	{
-		QListWidgetItem *customItem = ui->customList->currentItem();
+		QListWidgetItem *customItem = _customList->currentItem();
 		Q_ASSERT(customItem != nullptr);//必须选中一种（有可能什么都没选中吗？）
 		articleItem->setData(customItem->data(Qt::DisplayRole), CustomFilterModel::CUSTOM_ROLE());
 	}
@@ -365,7 +364,7 @@ void BlogEditArea::userCreateArticle()
 	_proxyModel->invalidate();
 	QModelIndex index = _blogHeadModel->indexFromItem(articleItem);
 	index = _proxyModel->mapFromSource(index);
-	ui->blogHeadView->setCurrentIndex(index);
+	_articleHeadView->setCurrentIndex(index);
 	editArticle();
 }
 
@@ -378,7 +377,7 @@ void BlogEditArea::userCreateCustom()
 		QMessageBox::warning(this, "创建分类错误", "请输入合法的分类名称");
 		return ;
 	}
-	new QListWidgetItem(custom, ui->customList);
+	new QListWidgetItem(custom, _customList);
 }
 
 void BlogEditArea::setCurrentArticle(const QModelIndex &proxyIndex)
@@ -394,7 +393,7 @@ void BlogEditArea::setCurrentArticle(const QModelIndex &proxyIndex)
 	ui->editBtn->setEnabled(true);
 	showEditor();
 	//打开保存文件
-	QString articlePath = articleHtmlFilePath(ui->blogHeadView->currentIndex());
+	QString articlePath = articleHtmlFilePath(_articleHeadView->currentIndex());
 	Q_ASSERT(QFileInfo::exists(articlePath));
 	_editView->load(QUrl::fromLocalFile(articlePath));
 /*
@@ -415,14 +414,14 @@ void BlogEditArea::selectCustom(QListWidgetItem *currentItem)
 {
 	Q_ASSERT_X(currentItem != nullptr, "In BlogEditArea::category",
 			   "CurrentItem == nullptr!失焦？");
-	_proxyModel->setFilterCustom(ui->customList->row(currentItem) != 0 ?
+	_proxyModel->setFilterCustom(_customList->row(currentItem) != 0 ?
 				currentItem->data(Qt::DisplayRole).toString()
 			  : QString());
 }
 
 void BlogEditArea::on_editBtn_clicked()
 {
-	QModelIndex index = ui->blogHeadView->currentIndex();
+	QModelIndex index = _articleHeadView->currentIndex();
 	editArticle(index.data().toString());
 }
 
@@ -430,20 +429,20 @@ void BlogEditArea::on_cancelBtn_clicked()
 {
 	_isUserCreateArticle = false;
 
-	QModelIndex index = ui->blogHeadView->currentIndex();
+	QModelIndex index = _articleHeadView->currentIndex();
 	if (index.data().toString().isEmpty())
 	{
 		QFile::remove(articleHtmlFilePath(index));
 		obsoleteID(index.data(CustomFilterModel::ID_ROLE()).toInt());
-		ui->blogHeadView->model()->removeRow(index.row(), index.parent());
+		_articleHeadView->model()->removeRow(index.row(), index.parent());
 	}
 
 //	_editor->load(QUrl::fromLocalFile(articleHtmlFilePath(ui->blogHeadView->currentIndex())));
 	ui->cancelBtn->hide();
 	ui->saveBtn->hide();
 	ui->editBtn->show();
-	ui->blogInfoFrame->show();
-	setCurrentArticle(ui->blogHeadView->currentIndex());
+	ui->toolWidgets->show();
+	setCurrentArticle(_articleHeadView->currentIndex());
 }
 
 void BlogEditArea::on_saveBtn_clicked()
@@ -462,4 +461,178 @@ void BlogEditArea::on_saveBtn_clicked()
 	}
 
 	saveArticle(_editView->getArticle());
+}
+
+void BlogEditArea::initToolBar()
+{
+	QVBoxLayout *layout = new QVBoxLayout(_toolBar);
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setSpacing(5);
+
+	_articleManagerBtn->setIcon(QIcon(":/Image/ArticleManager.png"));
+	_articleManagerBtn->setIconSize(QSize(36, 36));
+	_articleManagerBtn->setCheckable(true);
+	connect(_articleManagerBtn, &QToolButton::clicked, this, &BlogEditArea::selectArticleManager);
+	layout->addWidget(_articleManagerBtn, 1);
+
+	_messengerBtn->setIcon(QIcon(":/Image/Messenger.png"));
+	_messengerBtn->setIconSize(QSize(36, 36));
+	_messengerBtn->setCheckable(true);
+	connect(_messengerBtn, &QToolButton::clicked, this, &BlogEditArea::selectMessenger);
+	layout->addWidget(_messengerBtn, 1);
+
+	_linkWidgetBtn->setIcon(QIcon(":/Image/LinkWidget.png"));
+	_linkWidgetBtn->setIconSize(QSize(36, 36));
+	_linkWidgetBtn->setCheckable(true);
+	connect(_linkWidgetBtn, &QToolButton::clicked, this, &BlogEditArea::selectLinkWidget);
+	layout->addWidget(_linkWidgetBtn, 1);
+
+	layout->addStretch(10);
+
+	(qobject_cast<QHBoxLayout*>(this->layout()))->insertWidget(0, _toolBar);
+
+	_toolBar->setStyleSheet("QFrame{background-color:white;}");
+}
+
+void BlogEditArea::initArticleManager()
+{
+	QFrame *articleManager = new QFrame(ui->toolWidgets);
+	QHBoxLayout *managerLayout = new QHBoxLayout(articleManager);
+	managerLayout->setContentsMargins(0, 0, 0, 0);
+	managerLayout->setSpacing(0);
+	QFont font;
+	QSizePolicy horizontalfixed(QSizePolicy::Minimum, QSizePolicy::Preferred);
+	//文章自定义分类管理器
+	_customFrame = new QFrame(ui->toolWidgets);
+	_customFrame->setObjectName(QStringLiteral("customFrame"));
+	horizontalfixed.setHeightForWidth(_customFrame->sizePolicy().hasHeightForWidth());
+	_customFrame->setSizePolicy(horizontalfixed);
+	_customFrame->setMinimumSize(QSize(160, 0));
+
+	//.栅格布局
+	auto gridLayout = new QGridLayout(_customFrame);
+	gridLayout->setSpacing(0);
+	gridLayout->setContentsMargins(0, 0, 0, 0);
+
+	auto createArticleBtn = new QPushButton(_customFrame);
+	createArticleBtn->setObjectName(QStringLiteral("createArticleBtn"));
+	createArticleBtn->setIcon(QIcon(QStringLiteral(":/Image/NewBlog.png")));
+	createArticleBtn->setIconSize(QSize(18, 18));
+	connect(createArticleBtn, &QPushButton::pressed, this, &BlogEditArea::userCreateArticle);
+
+	gridLayout->addWidget(createArticleBtn, 0, 0, 1, 1);
+
+	auto createCustomBtn = new QPushButton(_customFrame);
+	createCustomBtn->setObjectName(QStringLiteral("createCustomBtn"));
+	createCustomBtn->setIcon(QIcon(QStringLiteral(":/Image/NewCustom.png")));
+	createCustomBtn->setIconSize(QSize(18, 18));
+	connect(createCustomBtn, &QPushButton::pressed, this, &BlogEditArea::userCreateCustom);
+
+	gridLayout->addWidget(createCustomBtn, 0, 1, 1, 1);
+
+	_customList = new CustomListWidget(_customFrame);
+	_customList->setObjectName(QStringLiteral("customList"));
+	horizontalfixed.setHeightForWidth(_customList->sizePolicy().hasHeightForWidth());
+	_customList->setSizePolicy(horizontalfixed);
+	_customList->setMinimumSize(QSize(160, 0));
+	font.setPointSize(12);
+	_customList->setFont(font);
+	_customList->setFrameShadow(QFrame::Plain);
+	_customList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	_customList->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+	_customList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	_customList->setProperty("showDropIndicator", QVariant(false));
+	_customList->setDragDropMode(QAbstractItemView::DropOnly);
+	_customList->setResizeMode(QListView::Adjust);
+	_customList->setUniformItemSizes(true);
+	_customList->setWordWrap(false);
+	gridLayout->addWidget(_customList, 1, 0, 1, 2);
+	new QListWidgetItem("全部", _customList);
+
+	//.行高1比10
+	gridLayout->setRowStretch(0, 1);
+	gridLayout->setRowStretch(1, 10);
+
+	managerLayout->addWidget(_customFrame);
+
+	//文章条目管理器
+	_articleHeadFrame = new QFrame(ui->toolWidgets);
+	_articleHeadFrame->setObjectName(QStringLiteral("articleHeadFrame"));
+	_articleHeadFrame->setMaximumSize(QSize(150, 16777215));
+
+	//.垂直布局
+	QVBoxLayout *vLayout = new QVBoxLayout(_articleHeadFrame);
+	vLayout->setSpacing(0);
+	vLayout->setContentsMargins(0, 0, 0, 0);
+
+	//.
+	_filterEdit = new QLineEdit(_articleHeadFrame);
+	_filterEdit->setObjectName(QStringLiteral("filterEdit"));
+	QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	sizePolicy2.setHeightForWidth(_filterEdit->sizePolicy().hasHeightForWidth());
+	_filterEdit->setSizePolicy(sizePolicy2);
+	_filterEdit->setMinimumSize(QSize(0, 24));
+	_filterEdit->setMaximumSize(QSize(16777214, 24));
+	_filterEdit->setFrame(true);
+	_filterEdit->setClearButtonEnabled(true);
+	vLayout->addWidget(_filterEdit);
+
+	//.
+	_articleHeadView = new BlogHeadView(_articleHeadFrame);
+	_articleHeadView->setObjectName(QStringLiteral("articleHeadView"));
+	horizontalfixed.setHeightForWidth(_articleHeadView->sizePolicy().hasHeightForWidth());
+	_articleHeadView->setSizePolicy(horizontalfixed);
+	font.setPointSize(13);
+	_articleHeadView->setFont(font);
+	_articleHeadView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	_articleHeadView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
+	_articleHeadView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	_articleHeadView->setResizeMode(QListView::Fixed);
+	_articleHeadView->setWordWrap(true);
+
+	vLayout->addWidget(_articleHeadView);
+
+	managerLayout->addWidget(_articleHeadFrame);
+
+	ui->toolWidgets->addWidget(articleManager);
+}
+
+//setChecked不会发出checked信号
+void BlogEditArea::selectArticleManager(bool isSelect)
+{
+	if (isSelect)
+	{
+		ui->toolWidgets->setCurrentIndex(0);//-!!!
+		ui->toolWidgets->show();
+		_messengerBtn->setChecked(false);
+		_linkWidgetBtn->setChecked(false);
+	}
+	else
+		ui->toolWidgets->hide();
+}
+
+void BlogEditArea::selectMessenger(bool isSelect)
+{
+	if (isSelect)
+	{
+		ui->toolWidgets->setCurrentIndex(1);//-!!!
+		ui->toolWidgets->show();
+		_articleManagerBtn->setChecked(false);
+		_linkWidgetBtn->setChecked(false);
+	}
+	else
+		ui->toolWidgets->hide();
+}
+
+void BlogEditArea::selectLinkWidget(bool isSelect)
+{
+	if (isSelect)
+	{
+		ui->toolWidgets->setCurrentIndex(2);//-!!!
+		ui->toolWidgets->show();
+		_articleManagerBtn->setChecked(false);
+		_messengerBtn->setChecked(false);
+	}
+	else
+		ui->toolWidgets->hide();
 }
