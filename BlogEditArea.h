@@ -1,9 +1,7 @@
 ﻿#ifndef BLOGEDITAREA_H
 #define BLOGEDITAREA_H
 
-#include "customlistwidget.h"
 #include "CustomFilterModel.h"
-#include "blogheadview.h"
 #include "WebCorrespond/article.h"
 #include "editview.h"
 #include <QWidget>
@@ -11,18 +9,12 @@
 #include <QListWidgetItem>
 #include <QFile>
 #include <QJsonObject>
-#include <QLabel>
-#include <QToolBar>
-#include <QToolButton>
-#include <QPushButton>
-#include <functional>
 /*class BlogEditArea
  * 文章分类共有两种，系统定义的分类和用户定义的分类
  *
  * 系统定义的分类是用来在社区里筛选文章的，所以是强制的，并且共有两层分类，称第一层分类为category，第二层为attached
  *
- * 用户定义的分类是便于用户自己管理设置的，所以是不必要的，只有一层分类
- * 不属于用户定义的任何一个分类的文章将在“全部”分类中找到，
+ * 用户定义的分类是便于用户自己管理设置的，所以是不必要的，只有一层分类，不属于用户定义的任何一个分类的文章将在“全部”分类中找到，
  * 将用户定义的分类称为Custom
  *
  * CustomList->model() == _proxyModel
@@ -47,29 +39,13 @@ public:
 
 	explicit BlogEditArea(QWidget *parent = nullptr);
 	~BlogEditArea();
-
-	bool initWidgets();
-
-
 	bool customReviewer(const QString &custom);
 
 	EditView* editView(){return _editView;}
-
-	//设置文章管理窗口是否可见
-	void setArticleManagerVisible(bool isVisible);
-	void showArticleManager();
-	void hideArticleManager();
-
 protected:
 	void closeEvent(QCloseEvent *event)override;
 
 private slots:
-
-	void waitForWebView();
-	//
-	void selectArticleManager(bool isSelect);
-	void selectMessenger(bool isSelect);
-	void selectLinkWidget(bool isSelect);
 	//用户主动创建文章
 	void userCreateArticle();
 
@@ -92,9 +68,6 @@ private slots:
 	void on_saveBtn_clicked();
 
 private:
-	void initToolBar();
-	void initArticleManager();
-
 	//读取本地信息
 	void readInfo();
 	void readIdInfo(QJsonObject idRoot);
@@ -119,40 +92,17 @@ private:
 
 	//编辑文章
 	void editArticle(const QString &title = QString());
-
-	//
-	void selectToolWidget(int widgetID);
 //Field
-public:
-	QLabel *_splashLabel;
-
 private:
 	static QString BLOG_FRAME;//阅读页面外观的HTML代码
 	static QVector<int> OBSOLETE_ID_STORE;//返回的ID临时缓存区
 	static int LOCAL_ID_BEGIN;//新ID的起始位置
 
-	//UI
 	Ui::BlogEditArea *ui;
-
-	//工具栏
-	QFrame *_toolBar;
-
-	//功能按钮
-	QToolButton *_articleManagerBtn, *_messengerBtn, *_linkWidgetBtn;
-
-	QFrame *_customFrame;
-
-	CustomListWidget *_customList;
-
-	QFrame *_articleHeadFrame;
-	//文章标题过滤器
-	QLineEdit *_filterEdit;
-	BlogHeadView *_articleHeadView;
-
 	EditView *_editView;
 	QStandardItemModel *_blogHeadModel;
 	CustomFilterModel *_proxyModel;
-	bool _isUserCreateArticle;//新建文件时会触发_articleHeadView的currentIndexChanged的信号，简单屏蔽一下
+	bool _isUserCreateArticle;//新建文件时会触发BlogHeadView的currentIndexChanged的信号，简单屏蔽一下
 };
 
 #endif // BLOGEDITAREA_H
