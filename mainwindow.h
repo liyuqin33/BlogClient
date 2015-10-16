@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QToolBar>
 #include <QDebug>
 
 #include "titlebar.h"
@@ -27,19 +28,27 @@ public:
 private slots:
 	void waitForWebView();
 
+	void setArticleManagerVisible(bool isVisible);
+	void setMessengerVisible(bool isVisible);
+	void setLinkWidgetVisible(bool isVisible);
 private:
+	void initToolBar();
 	void initQss();
     void initLayout();
     void initConnect();
 
+	void setToolWidgetVisible(std::function<void(bool)> setVisible, bool isVisible,
+							  QToolButton *excludeBtn1, QToolButton *excludeBtn2);
+
     Direction _direction;           //方向
     bool _isLeftPressed;            //左键
     QPoint _dragPosition;           //左键按下的位置
-    TitleBar *_titleBar;            //菜单栏
+	QToolBar *_toolBar;
+	QToolButton *_articleManagerBtn, *_messengerBtn, *_linkWidgetBtn;
 
     QStackedWidget *_functionWidget;
     BlogEditArea *_blogEditArea;
-    QVBoxLayout *_mainLayout;
+	QHBoxLayout *_mainLayout;
 
 	//欢迎Label
 	QLabel *_splashLabel;

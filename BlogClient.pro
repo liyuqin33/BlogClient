@@ -13,8 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    titlebar.cpp \
     BlogEditArea.cpp \
     blogheadview.cpp \
     CustomFilterModel.cpp \
@@ -23,8 +21,7 @@ SOURCES += main.cpp\
     MyUtility.cpp \
     WebCorrespond/article.cpp
 
-HEADERS  += mainwindow.h \
-    titlebar.h \
+HEADERS  += \
     BlogEditArea.h \
     blogheadview.h \
     CustomFilterModel.h \
