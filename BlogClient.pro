@@ -19,8 +19,7 @@ SOURCES += main.cpp\
     customlistwidget.cpp \
     editview.cpp \
     MyUtility.cpp \
-    WebCorrespond/article.cpp \
-    splashwindow.cpp
+    WebCorrespond/article.cpp
 
 HEADERS  += \
     BlogEditArea.h \
@@ -29,8 +28,7 @@ HEADERS  += \
     customlistwidget.h \
     editview.h \
     MyUtility.h \
-    WebCorrespond/article.h \
-    splashwindow.h
+    WebCorrespond/article.h
 
 RESOURCES += \
 	BlogClient.qrc

@@ -64,6 +64,8 @@ protected:
 	void closeEvent(QCloseEvent *event)override;
 
 private slots:
+
+	void waitForWebView();
 	//
 	void selectArticleManager(bool isSelect);
 	void selectMessenger(bool isSelect);
@@ -121,6 +123,9 @@ private:
 	//
 	void selectToolWidget(int widgetID);
 //Field
+public:
+	QLabel *_splashLabel;
+
 private:
 	static QString BLOG_FRAME;//阅读页面外观的HTML代码
 	static QVector<int> OBSOLETE_ID_STORE;//返回的ID临时缓存区

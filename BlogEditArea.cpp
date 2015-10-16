@@ -47,17 +47,32 @@ QString BlogEditArea::articleHtmlFilePath(QModelIndex index)
 
 BlogEditArea::BlogEditArea(QWidget *parent)
 	: QWidget(parent)
+	, _splashLabel(nullptr)
 	, ui(new Ui::BlogEditArea)
-	, _toolBar(new QFrame(this))
-	, _articleManagerBtn(new QToolButton(_toolBar))
-	, _messengerBtn(new QToolButton(_toolBar))
-	, _linkWidgetBtn(new QToolButton(_toolBar))
+	, _toolBar(nullptr)
+	, _articleManagerBtn(nullptr)
+	, _messengerBtn(nullptr)
+	, _linkWidgetBtn(nullptr)
 	, _articleHeadView(nullptr)
 	, _editView(nullptr)
 	, _blogHeadModel(nullptr)
 	, _proxyModel(nullptr)
 	, _isUserCreateArticle(false)
 {
+}
+
+BlogEditArea::~BlogEditArea()
+{
+	delete ui;
+}
+
+bool BlogEditArea::initWidgets()
+{
+	_toolBar = new QFrame(this);
+	_articleManagerBtn = new QToolButton(_toolBar);
+	_messengerBtn = new QToolButton(_toolBar);
+	_linkWidgetBtn = new QToolButton(_toolBar);
+
 	ui->setupUi(this);
 	initToolBar();
 	initArticleManager();
@@ -94,13 +109,13 @@ BlogEditArea::BlogEditArea(QWidget *parent)
 	_customList->setCurrentRow(0);//默认文章分类选中“全部”
 	//浏览窗口QWebView第一次加载网页时需要较长时间，利用欢迎界面，在初始化的时候预加载一次
 	_articleHeadView->setCurrentIndex(_proxyModel->index(0, 0));
-	ui->saveBtn->hide();
-	ui->cancelBtn->hide();
-}
 
-BlogEditArea::~BlogEditArea()
-{
-	delete ui;
+	_toolBar->hide();
+	ui->toolWidgets->hide();
+	ui->editorArea->hide();
+
+	connect(_editView, &EditView::loadFinished, this, &BlogEditArea::waitForWebView);
+	return true;
 }
 
 bool BlogEditArea::customReviewer(const QString &custom)
@@ -112,6 +127,19 @@ bool BlogEditArea::customReviewer(const QString &custom)
 void BlogEditArea::closeEvent(QCloseEvent *event)
 {
 	if (saveInfo()) QWidget::closeEvent(event);
+}
+
+void BlogEditArea::waitForWebView()
+{
+	Q_ASSERT (_splashLabel != nullptr);
+	disconnect(_editView, &EditView::loadFinished, this, &BlogEditArea::waitForWebView);
+	_splashLabel->close();
+	_splashLabel = nullptr;
+	_toolBar->show();
+	ui->toolWidgets->show();
+	ui->editorArea->show();
+	ui->saveBtn->hide();
+	ui->cancelBtn->hide();
 }
 
 void BlogEditArea::readInfo()
