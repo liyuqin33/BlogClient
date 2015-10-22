@@ -1,4 +1,5 @@
-﻿#include "BlogEditArea.h"
+﻿#include "BlogEditArea/BlogEditArea.h"
+#include "Login/login.h"
 #include <QApplication>
 #include <QDateTime>
 #include <QSplashScreen>
@@ -9,18 +10,26 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 	BlogEditArea w;
-	w._splashLabel = new QLabel(&w);
-	w._splashLabel->setPixmap(QPixmap(":/BlogImages/hello.jpg"));
-	w._splashLabel->setScaledContents(true);
-	w._splashLabel->setAttribute(Qt::WA_DeleteOnClose);
-	//UI会resize BlogEditArea窗口，所以showMaximized没用
-//	w._splashLabel->resize(QApplication::desktop()->availableGeometry().size() - (w.frameSize() - w.size()));
-	w._splashLabel->resize(1214, 577);
-	w._splashLabel->move(0, 0);
-	qDebug() << QApplication::desktop()->availableGeometry().size() - (w.frameSize() - w.size());
-	w.move(100, 0);
-	w.show();
-	a.processEvents();//处理paintEvent
-	w.initWidgets();
-    return a.exec();
+
+//    w.setWindowFlags(Qt::FramelessWindowHint);
+    Login qdialog(&w);
+    qdialog.setWindowTitle("登陆界面");
+    if ( qdialog.exec() == QDialog::Accepted )
+    {
+        w._splashLabel = new QLabel(&w);
+        w._splashLabel->setPixmap(QPixmap(":/Image/hello.jpg"));
+        w._splashLabel->setScaledContents(true);
+        w._splashLabel->setAttribute(Qt::WA_DeleteOnClose);
+        w._splashLabel->resize(1214, 577);
+        w._splashLabel->move(0, 0);
+        w.move(100, 50);
+        w.show();
+        a.processEvents();//处理paintEvent
+        w.initWidgets();
+
+        return a.exec();
+    }
+    return 0;
+
+
 }

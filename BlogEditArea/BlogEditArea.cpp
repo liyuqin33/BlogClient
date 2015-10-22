@@ -58,6 +58,7 @@ BlogEditArea::BlogEditArea(QWidget *parent)
 	, _blogHeadModel(nullptr)
 	, _proxyModel(nullptr)
 	, _isUserCreateArticle(false)
+    , _messageWidget(nullptr)
 {
 }
 
@@ -70,13 +71,17 @@ bool BlogEditArea::initWidgets()
 {
 	_toolBar = new QFrame(this);
 	_articleManagerBtn = new QToolButton(_toolBar);
+    _articleManagerBtn->setCursor(Qt::PointingHandCursor);
 	_messengerBtn = new QToolButton(_toolBar);
+    _messengerBtn->setCursor(Qt::PointingHandCursor);
 	_linkWidgetBtn = new QToolButton(_toolBar);
+    _linkWidgetBtn->setCursor(Qt::PointingHandCursor);
+    _messageWidget = new MessageWidget(this);
 
 	ui->setupUi(this);
 	initToolBar();
 	initArticleManager();
-	ui->toolWidgets->addWidget(new QFrame(this));
+    ui->toolWidgets->addWidget(_messageWidget);
 	ui->toolWidgets->addWidget(new QFrame(this));
 	_editView = new EditView(this);
 	ui->editorContainLayout->addWidget(_editView);
@@ -140,6 +145,7 @@ void BlogEditArea::waitForWebView()
 	ui->editorArea->show();
 	ui->saveBtn->hide();
 	ui->cancelBtn->hide();
+    this->showMaximized();
 }
 
 void BlogEditArea::readInfo()
@@ -519,7 +525,8 @@ void BlogEditArea::initToolBar()
 
 	(qobject_cast<QHBoxLayout*>(this->layout()))->insertWidget(0, _toolBar);
 
-	_toolBar->setStyleSheet("QFrame{background-color:white;}");
+//	_toolBar->setStyleSheet("QFrame{background-color:white;}");
+    _toolBar->setObjectName(QStringLiteral("toolBar"));
 }
 
 void BlogEditArea::initArticleManager()
@@ -529,7 +536,7 @@ void BlogEditArea::initArticleManager()
 	managerLayout->setContentsMargins(0, 0, 0, 0);
 	managerLayout->setSpacing(0);
 	QFont font;
-	QSizePolicy horizontalfixed(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    QSizePolicy horizontalfixed(QSizePolicy::Minimum, QSizePolicy::Preferred);
 	//文章自定义分类管理器
 	_customFrame = new QFrame(ui->toolWidgets);
 	_customFrame->setObjectName(QStringLiteral("customFrame"));
@@ -543,6 +550,8 @@ void BlogEditArea::initArticleManager()
 	gridLayout->setContentsMargins(0, 0, 0, 0);
 
 	auto createArticleBtn = new QPushButton(_customFrame);
+    createArticleBtn->setCursor(Qt::PointingHandCursor);
+    createArticleBtn->setToolTip(QString("创建新博客"));
 	createArticleBtn->setObjectName(QStringLiteral("createArticleBtn"));
 	createArticleBtn->setIcon(QIcon(QStringLiteral(":/Image/NewBlog.png")));
 	createArticleBtn->setIconSize(QSize(18, 18));
@@ -551,6 +560,8 @@ void BlogEditArea::initArticleManager()
 	gridLayout->addWidget(createArticleBtn, 0, 0, 1, 1);
 
 	auto createCustomBtn = new QPushButton(_customFrame);
+    createCustomBtn->setCursor(Qt::PointingHandCursor);
+    createCustomBtn->setToolTip(QString("创建新分类"));
 	createCustomBtn->setObjectName(QStringLiteral("createCustomBtn"));
 	createCustomBtn->setIcon(QIcon(QStringLiteral(":/Image/NewCustom.png")));
 	createCustomBtn->setIconSize(QSize(18, 18));
