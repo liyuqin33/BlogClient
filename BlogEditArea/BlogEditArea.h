@@ -1,11 +1,13 @@
 ﻿#ifndef BLOGEDITAREA_H
 #define BLOGEDITAREA_H
 
-#include "customlistwidget.h"
-#include "CustomFilterModel.h"
-#include "blogheadview.h"
+#include "BlogEditArea/customlistwidget.h"
+#include "BlogEditArea/CustomFilterModel.h"
+#include "BlogEditArea/blogheadview.h"
 #include "WebCorrespond/article.h"
-#include "editview.h"
+#include "BlogEditArea/editview.h"
+#include "MessageWidget/widget.h"
+
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QListWidgetItem>
@@ -16,6 +18,7 @@
 #include <QToolButton>
 #include <QPushButton>
 #include <functional>
+#include <QApplication>
 /*class BlogEditArea
  * 文章分类共有两种，系统定义的分类和用户定义的分类
  *
@@ -148,7 +151,7 @@ private:
 	//文章标题过滤器
 	QLineEdit *_filterEdit;
 	BlogHeadView *_articleHeadView;
-
+    MessageWidget *_messageWidget;
 	EditView *_editView;
 	QStandardItemModel *_blogHeadModel;
 	CustomFilterModel *_proxyModel;

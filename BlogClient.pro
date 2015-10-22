@@ -13,27 +13,39 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    BlogEditArea.cpp \
-    blogheadview.cpp \
-    CustomFilterModel.cpp \
-    customlistwidget.cpp \
-    editview.cpp \
-    MyUtility.cpp \
-    WebCorrespond/article.cpp
+    WebCorrespond/article.cpp \
+    BlogEditArea/BlogEditArea.cpp \
+    BlogEditArea/blogheadview.cpp \
+    BlogEditArea/CustomFilterModel.cpp \
+    BlogEditArea/customlistwidget.cpp \
+    BlogEditArea/editview.cpp \
+    BlogEditArea/MyUtility.cpp \
+    MessageWidget/itemwidget.cpp \
+    MessageWidget/piclabel.cpp \
+    MessageWidget/statewidget.cpp \
+    MessageWidget/widget.cpp \
+    Login/login.cpp
 
 HEADERS  += \
-    BlogEditArea.h \
-    blogheadview.h \
-    CustomFilterModel.h \
-    customlistwidget.h \
-    editview.h \
-    MyUtility.h \
-    WebCorrespond/article.h
+    WebCorrespond/article.h \
+    BlogEditArea/BlogEditArea.h \
+    BlogEditArea/blogheadview.h \
+    BlogEditArea/CustomFilterModel.h \
+    BlogEditArea/customlistwidget.h \
+    BlogEditArea/editview.h \
+    BlogEditArea/MyUtility.h \
+    MessageWidget/itemwidget.h \
+    MessageWidget/piclabel.h \
+    MessageWidget/statewidget.h \
+    MessageWidget/widget.h \
+    Login/login.h
 
 RESOURCES += \
-	BlogClient.qrc
+        BlogClient.qrc
+
 
 CONFIG += c++11
 
 FORMS += \
-    BlogEditArea.ui
+    BlogEditArea/BlogEditArea.ui \
+    Login/login.ui

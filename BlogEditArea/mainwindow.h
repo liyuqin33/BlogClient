@@ -10,8 +10,8 @@
 #include <QDebug>
 
 #include "titlebar.h"
-#include "BlogEditArea.h"
-#include "MyUtility.h"
+#include "BlogEditArea/BlogEditArea.h"
+#include "BlogEditArea/MyUtility.h"
 
 #define MARGIN 5
 class MainWindow : public QFrame
