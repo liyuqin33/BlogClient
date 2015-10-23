@@ -54,11 +54,11 @@ BlogEditArea::BlogEditArea(QWidget *parent)
 	, _messengerBtn(nullptr)
 	, _linkWidgetBtn(nullptr)
 	, _articleHeadView(nullptr)
+	, _messageWidget(nullptr)
 	, _editView(nullptr)
 	, _blogHeadModel(nullptr)
 	, _proxyModel(nullptr)
 	, _isUserCreateArticle(false)
-    , _messageWidget(nullptr)
 {
 }
 
@@ -113,13 +113,19 @@ bool BlogEditArea::initWidgets()
 	_articleManagerBtn->setChecked(true);//默认打开文章管理器
 	_customList->setCurrentRow(0);//默认文章分类选中“全部”
 	//浏览窗口QWebView第一次加载网页时需要较长时间，利用欢迎界面，在初始化的时候预加载一次
-	_articleHeadView->setCurrentIndex(_proxyModel->index(0, 0));
+	if (_proxyModel->rowCount() > 0)
+	{
+		_articleHeadView->setCurrentIndex(_proxyModel->index(0, 0));
+		_toolBar->hide();
+		ui->toolWidgets->hide();
+		ui->editorArea->hide();
 
-	_toolBar->hide();
-	ui->toolWidgets->hide();
-	ui->editorArea->hide();
-
-	connect(_editView, &EditView::loadFinished, this, &BlogEditArea::waitForWebView);
+		connect(_editView, &EditView::loadFinished, this, &BlogEditArea::waitForWebView);
+	}
+	else
+	{
+		waitForWebView();
+	}
 	return true;
 }
 
