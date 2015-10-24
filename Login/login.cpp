@@ -121,6 +121,7 @@ void Login::loadUser()//加载本地用户
 		showAccount(_listWidget->item(0));
 		if(result["AutoLogin"].toBool())
 		{
+			ui->autoLoginBox->setChecked(true);//根据该按钮状态保存信息，所以需要设置
 			ui->loginBtn->animateClick();
 		}
 	}
