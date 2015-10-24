@@ -19,12 +19,14 @@ SOURCES += main.cpp\
     BlogEditArea/CustomFilterModel.cpp \
     BlogEditArea/customlistwidget.cpp \
     BlogEditArea/editview.cpp \
-    BlogEditArea/MyUtility.cpp \
     MessageWidget/itemwidget.cpp \
     MessageWidget/piclabel.cpp \
     MessageWidget/statewidget.cpp \
     MessageWidget/widget.cpp \
-    Login/login.cpp
+    Login/login.cpp \
+    Login/tray.cpp \
+    MyUtility.cpp \
+    Login/accountitem.cpp
 
 HEADERS  += \
     WebCorrespond/article.h \
@@ -33,12 +35,14 @@ HEADERS  += \
     BlogEditArea/CustomFilterModel.h \
     BlogEditArea/customlistwidget.h \
     BlogEditArea/editview.h \
-    BlogEditArea/MyUtility.h \
     MessageWidget/itemwidget.h \
     MessageWidget/piclabel.h \
     MessageWidget/statewidget.h \
     MessageWidget/widget.h \
-    Login/login.h
+    Login/login.h \
+    Login/tray.h \
+    MyUtility.h \
+    Login/accountitem.h
 
 RESOURCES += \
         BlogClient.qrc
