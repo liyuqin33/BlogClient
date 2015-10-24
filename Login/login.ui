@@ -46,7 +46,7 @@
      <height>350</height>
     </size>
    </property>
-   <widget class="QPushButton" name="findPasswordsBtn">
+   <widget class="QPushButton" name="findPasswordBtn">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -62,6 +62,9 @@
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
      <string>找回密码</string>
@@ -86,6 +89,9 @@
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="autoFillBackground">
      <bool>false</bool>
@@ -116,7 +122,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="../BlogClient.qrc">:/Image/label.png</pixmap>
+     <pixmap resource="../BlogClient.qrc">:/Image/login/label.png</pixmap>
     </property>
    </widget>
    <widget class="QCheckBox" name="autoLoginBox">
@@ -134,11 +140,11 @@
       <pointsize>9</pointsize>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>自动登录</string>
-    </property>
-    <property name="tristate">
-     <bool>false</bool>
     </property>
    </widget>
    <widget class="QLineEdit" name="passwordEdit">
@@ -160,7 +166,7 @@
      <enum>QLineEdit::Password</enum>
     </property>
     <property name="placeholderText">
-     <string>PassWords</string>
+     <string>PassWord</string>
     </property>
     <property name="clearButtonEnabled">
      <bool>true</bool>
@@ -177,6 +183,9 @@
     </property>
     <property name="cursor">
      <cursorShape>IBeamCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::WheelFocus</enum>
     </property>
     <property name="editable">
      <bool>true</bool>
@@ -225,6 +234,9 @@
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>登 录</string>
     </property>
@@ -249,6 +261,9 @@
     </property>
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="toolTip">
      <string>最小化</string>
@@ -276,6 +291,9 @@
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="toolTip">
      <string>关闭</string>
     </property>
@@ -298,12 +316,26 @@
       <family>幼圆</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
      <string>记住密码</string>
     </property>
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>userNameBox</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>savePasswordBox</tabstop>
+  <tabstop>autoLoginBox</tabstop>
+  <tabstop>loginBtn</tabstop>
+  <tabstop>registerBtn</tabstop>
+  <tabstop>findPasswordBtn</tabstop>
+  <tabstop>minBtn</tabstop>
+  <tabstop>closeBtn</tabstop>
+ </tabstops>
  <resources>
   <include location="../BlogClient.qrc"/>
  </resources>

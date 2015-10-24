@@ -1,5 +1,6 @@
 ﻿#include "BlogEditArea/BlogEditArea.h"
 #include "Login/login.h"
+#include "Login/tray.h"
 #include <QApplication>
 #include <QDateTime>
 #include <QSplashScreen>
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
 //    w.setWindowFlags(Qt::FramelessWindowHint);
     Login qdialog(&w);
     qdialog.setWindowTitle("登陆界面");
+    Tray *tray=qdialog._tray;
     if ( qdialog.exec() == QDialog::Accepted )
     {
         w._splashLabel = new QLabel(&w);
