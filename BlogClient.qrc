@@ -26,5 +26,6 @@
         <file>Image/login/item_del.png</file>
         <file>Image/login/label.png</file>
         <file>Image/login/min.png</file>
+        <file>Image/login/blog_logined.png</file>
     </qresource>
 </RCC>
