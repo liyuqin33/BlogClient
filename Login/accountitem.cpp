@@ -40,9 +40,9 @@ void AccountItem::setID(QString account_text)    //设置用户ID
 {
 	_label->setText(account_text);
 }
-void AccountItem::setPassword(QString passwords)    //设置用户密码
+void AccountItem::setPassword(QString password)    //设置用户密码
 {
-	_password=passwords;
+    _password=password;
 }
 void AccountItem::setIsSavePassword(bool isAuto)    //设置用户自动登陆
 {
@@ -88,4 +88,3 @@ void AccountItem::mouseReleaseEvent(QMouseEvent *)    //鼠标释放事件重写
 		_isMousePress = false;
 	}
 }
-

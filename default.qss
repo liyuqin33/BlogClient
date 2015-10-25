@@ -170,17 +170,17 @@ QPushButton#loginBtn:pressed
 }
 
 /* 跳转按钮 */
-QPushButton#registerBtn,QPushButton#findPasswordsBtn
+QPushButton#registerBtn,QPushButton#findPasswordBtn
 {
     color: #f6f8f6;
     background-color: #5789dc;
     border: none;
 }
-QPushButton#registerBtn:hover,QPushButton#findPasswordsBtn:hover
+QPushButton#registerBtn:hover,QPushButton#findPasswordBtn:hover
 {
     text-decoration: underline;
 }
-QPushButton#registerBtn:pressed, QPushButton#findPasswordsBtn:pressed
+QPushButton#registerBtn:pressed, QPushButton#findPasswordBtn:pressed
 {
     text-decoration: underline;
     padding-top: 2px;
