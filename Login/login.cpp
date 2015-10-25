@@ -18,6 +18,7 @@
 #include <QMessageBox>
 
 #include <QDebug>
+#include <QTime>
 
 Login::Login(QWidget *parent):
     QDialog(parent),
@@ -61,19 +62,20 @@ void Login::initUI()//加载UI
 void Login::initTray()//加载系统托盘
 {
     _tray=new Tray((QWidget*)this->parent());
-    connect(_tray, SIGNAL(showWindow()), this, SLOT(clickShowBtn()));
-    connect(_tray, SIGNAL(closeWindow()), this, SLOT(clickCloseBtn()));
-    connect(this, SIGNAL(accepted()), _tray, SLOT(logned()));
+	connect(_tray, &Tray::showWindow, this, &Login::clickShowBtn);
+	connect(_tray, &Tray::closeWindow, this, &Login::clickCloseBtn);
+	connect(this, SIGNAL(accepted()), _tray, SLOT(logned()));
 }
 
 void Login::initLink()//加载信号
 {
     connect(ui->loginBtn, SIGNAL(clicked()), this, SLOT(login()));//登陆
-    connect(ui->autoLoginBox, SIGNAL(toggled(bool)), this, SLOT(autoLoginBox(bool)));//自动登陆
+	//自动登陆——使用setClicked函数不会触发clicked信号
+	connect(ui->autoLoginBox, &QCheckBox::clicked, this, &Login::premiseSavePassword);
     connect(ui->findPasswordBtn, SIGNAL(clicked()), this, SLOT(findPassword()));//找回密码
     connect(ui->registerBtn, SIGNAL(clicked()), this, SLOT(registerUser()));//注册
     connect(ui->closeBtn, SIGNAL(clicked()), this, SLOT(clickCloseBtn()));
-    connect(ui->minBtn, SIGNAL(clicked()), this, SLOT(clickMinBtn()));
+	connect(ui->minBtn, &QToolButton::clicked, this, &Login::showMinimized);
 
 }
 
@@ -124,7 +126,7 @@ void Login::loadUser()//加载本地用户
 		if(result["AutoLogin"].toBool())
 		{
 			ui->autoLoginBox->setChecked(true);//根据该按钮状态保存信息，所以需要设置
-            ui->loginBtn->animateClick( );
+			ui->loginBtn->animateClick();
 		}
 	}
 }
@@ -132,18 +134,16 @@ void Login::loadUser()//加载本地用户
 //响应函数
 void Login::clickShowBtn()//点击恢复响应函数
 {
-    setFixedSize(300,350);
-    raise();//顶置到最顶层，在始终最顶的下面
+	this->showNormal();
+	this->raise();//顶置到最顶层，在始终最顶的下面
 }
+
 void Login::clickCloseBtn()//点击关闭响应函数
 {
-    saveUser(false);
+	saveUser();
     close();
 }
-void Login::clickMinBtn()//点击最小化响应函数
-{
-    setFixedSize(0,0);
-}
+
 void Login::login()//点击登陆响应函数
 {
     //发送信号给后台(判断是否加密)
@@ -158,20 +158,16 @@ void Login::login()//点击登陆响应函数
         emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), false);
     }
     qDebug()<<"登陆界面发出登陆信号"<<ui->userNameBox->lineEdit()->text()<<ui->passwordEdit->text();
-    //该句调试用-------------------------------------
-    isSuccessfulLoaded(LOG_IN);
-
 
     //登陆中界面
-    ui->userNameBox->hide();
-    ui->passwordEdit->hide();
-    ui->registerBtn->hide();
-    ui->findPasswordBtn->hide();
-    ui->passwordEdit->hide();
-    ui->autoLoginBox->hide();
-
-
-
+	showLoginInterface();
+	//该句调试用-------------------------------------
+	QTime t = QTime::currentTime();
+	while (t.secsTo(QTime::currentTime()) < 3)
+	{
+		QApplication::processEvents();
+	}
+	isSuccessfulLoaded(LOG_IN);
 }
 void Login::registerUser()//点击注册响应函数
 {
@@ -190,13 +186,9 @@ void Login::findPassword()//点击找回密码响应函数
     QDesktopServices::openUrl(url);
 }
 
-void Login::autoLoginBox(bool isPitchOn)//自动登陆必须记住密码（不会发出信号）
+void Login::premiseSavePassword(bool isPitchOn)//自动登陆必须记住密码（不会发出信号）
 {
-    if(isPitchOn)
-    {
-        ui->savePasswordBox->setChecked(isPitchOn);
-        ui->autoLoginBox->setChecked(isPitchOn);
-    }
+	if(isPitchOn) ui->savePasswordBox->setChecked(isPitchOn);
 }
 
 //用户交互-QComboBox
@@ -239,32 +231,26 @@ void Login::isSuccessfulLoaded(Load type)//后台返回是否能登陆对接的�
     switch(type)
     {
         case LOG_IN:
-        {
             //移除托盘连接，储存用户登录信息
-            disconnect(_tray, SIGNAL(showWindow()), this, SLOT(clickShowBtn()));
-            disconnect(_tray, SIGNAL(closeWindow()), this, SLOT(clickCloseBtn()));
-            saveUser(true);
+//            disconnect(_tray, SIGNAL(showWindow()), this, SLOT(clickShowBtn()));
+//            disconnect(_tray, SIGNAL(closeWindow()), this, SLOT(clickCloseBtn()));
+			addCurrentUser();
+			saveUser();
             this->Login::done();
-        }
+			break;
         case ERROR_PASSWORD:
-        {
             ui->hintLabel->setText("密码错误");
-            ui->passwordEdit->clear();
+//            ui->passwordEdit->clear();
             ui->passwordEdit->setFocus();
             break;
-        }
         case ERROR_UNNET:
-        {
             ui->hintLabel->setText("无法连接网络");
             break;
-        }
         case ERROR_USER:
-        {
             ui->hintLabel->setText("用户名不存在");
             ui->passwordEdit->clear();
             ui->userNameBox->setFocus();
             break;
-        }
     }
 }
 
@@ -274,45 +260,31 @@ void Login::done()//结束时的槽函数（登陆并关闭）
     QDialog::done(QDialog::Accepted);
 }
 
-void Login::saveUser(bool isLogined)//添加本地用户
+void Login::addCurrentUser()
+{
+	QString user = ui->userNameBox->lineEdit()->text();
+	QListWidgetItem *item = nullptr;
+	for (int i = 0; i != _listWidget->count(); ++i)
+	{
+		item = _listWidget->item(i);
+		if(((AccountItem*)_listWidget->itemWidget(item))->getID() == user)//如果相同
+		{
+			delete item;//删除
+			break;//ASSERT：原listWidget不重复
+		}
+	}
+	item = new QListWidgetItem();
+	AccountItem *account = new AccountItem(_listWidget, item, user,
+										   ui->passwordEdit->text(),
+										   ui->savePasswordBox->isChecked());
+	_listWidget->insertItem(0, item);
+	_listWidget->setItemWidget(item, account);
+}
+
+void Login::saveUser()//添加本地用户
 {
     /*此处应把成功登陆用户存于本地*/
     QVariantList userList;
-    if(isLogined)//登陆成功
-    {
-        QString user = ui->userNameBox->lineEdit()->text();
-        int i;
-        bool isExist=false;
-        for(i=0; i<_listWidget->count(); i++)//判断用户是否重复
-        {
-            if(((AccountItem*)_listWidget->itemWidget(_listWidget->item(i)))->getID() == user)//如果相同
-                //重复替换原来的并顶置
-            {
-                isExist=true;
-                //替换
-                //takeItem会删除item上的AccountWidget,所以要new一个
-                AccountItem *replaceAccount = new AccountItem(this, _listWidget->item(i)
-                                        , ui->userNameBox->lineEdit()->text()
-                                        , ui->passwordEdit->text()
-                                        , ui->savePasswordBox->isChecked());
-                //顶置
-                auto item = _listWidget->takeItem(i);
-                _listWidget->insertItem(0, item);
-                _listWidget->setItemWidget(item, replaceAccount);
-                break;
-            }
-        }
-        //生成一个json
-        if(!isExist)//不重复在json添加一个用户
-        {
-            QVariantMap jsonItem;
-            saveAccount(jsonItem,
-                        ui->userNameBox->lineEdit()->text(),
-                        ui->passwordEdit->text(),
-                        ui->savePasswordBox->isChecked());
-            userList << jsonItem;
-        }
-    }
     //生成其他json
     for(int i=0; i<_listWidget->count(); i++)
     {
@@ -339,8 +311,9 @@ void Login::saveUser(bool isLogined)//添加本地用户
         return ;
     }
     blogInfoFile.write(doc.toJson());
-    blogInfoFile.close();
+	blogInfoFile.close();
 }
+
 void Login::saveAccount(QVariantMap &item,
                         const QString &id,
                         const QString &password,
@@ -349,7 +322,25 @@ void Login::saveAccount(QVariantMap &item,
     item.insert("ID", id);
     item.insert("SavePassword", isSavePassword);
     if (isSavePassword)
-        item.insert("Password", password);
+		item.insert("Password", password);
+}
+
+void Login::showLoginInterface()
+{
+	ui->userNameBox->hide();
+	ui->passwordEdit->hide();
+	ui->savePasswordBox->hide();
+	ui->autoLoginBox->hide();
+	ui->registerBtn->hide();
+	ui->findPasswordBtn->hide();
+	ui->loginBtn->hide();
+	auto userLogo = new QLabel(this);
+	userLogo->setPixmap(QPixmap(":/Image/head2.jpg"));
+	userLogo->setScaledContents(true);
+	userLogo->setFixedSize(128, 128);
+	userLogo->move(this->width() / 2 - userLogo->width() / 2,
+				   this->height() / 2 - userLogo->width() / 2);
+	userLogo->show();
 }
 
 //鼠标拖动事件
