@@ -405,14 +405,6 @@ void Login::isSuccessfulLoaded(Load type)//后台返回是否能登陆对接的�
             //关闭渐变
             if(_isFlash)
             {
-                //动画过程中断开信号
-                disconnect(ui->loginBtn, &QPushButton::toggled, this, &Login::login);//登录
-                disconnect(ui->autoLoginBox, &QCheckBox::clicked, this, &Login::premiseSavePassword);//自动登陆
-                disconnect(ui->findPasswordBtn, &QPushButton::clicked, this, &Login::findPassword);//找回密码
-                disconnect(ui->registerBtn, &QPushButton::clicked, this, &Login::registerUser);//注册
-                disconnect(ui->closeBtn, &QPushButton::clicked, this, &Login::clickCloseBtn);//关闭
-                disconnect(ui->minBtn, &QToolButton::clicked, this, &Login::clickMinBtn);//最小化
-                disconnect(ui->userNameBox->lineEdit(), &QLineEdit::textEdited, this, &Login::changUser);//键盘修改用户名称
                 //动画
                 QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
                 animation->setDuration(1000);
@@ -423,7 +415,7 @@ void Login::isSuccessfulLoaded(Load type)//后台返回是否能登陆对接的�
             }
             else
                 this->Login::done();
-			break;
+            return;
         }
         case ERROR_PASSWORD:
             _tray->showHit(tr("研发博客-登录"), tr("密码错误"));
