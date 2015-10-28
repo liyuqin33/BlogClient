@@ -648,7 +648,7 @@ function _formatCss(css) {
 }
 function _formatUrl(url, mode, host, pathname) {
 	mode = _undef(mode, '').toLowerCase();
-	if (url.substr(0, 5) != 'data:') {
+	if (url.substr(0, 5) != 'data:' && url.substr(0, 8) != 'file:///') {
 		url = url.replace(/([^:])\/\//g, '$1/');
 	}
 	if (_inArray(mode, ['absolute', 'relative', 'domain']) < 0) {

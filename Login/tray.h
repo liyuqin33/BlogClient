@@ -13,6 +13,8 @@ class Tray:public QWidget
 public:
     Tray(QWidget *parent);
     ~Tray();
+
+    void showHit(const QString &title, const QString &str);
 private:
     void initUnlogn();
 
