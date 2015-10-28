@@ -129,7 +129,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>215</y>
+      <y>210</y>
       <width>80</width>
       <height>20</height>
      </rect>
@@ -184,27 +184,30 @@
     <property name="cursor">
      <cursorShape>IBeamCursor</cursorShape>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::WheelFocus</enum>
+    </property>
     <property name="editable">
      <bool>true</bool>
     </property>
     <property name="maxVisibleItems">
      <number>5</number>
     </property>
+    <property name="maxCount">
+     <number>10</number>
+    </property>
+    <property name="insertPolicy">
+     <enum>QComboBox::NoInsert</enum>
+    </property>
    </widget>
    <widget class="QLabel" name="hintLabel">
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>245</y>
+      <y>240</y>
       <width>100</width>
       <height>15</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>幼圆</family>
-      <pointsize>10</pointsize>
-     </font>
     </property>
     <property name="text">
      <string/>
@@ -237,8 +240,8 @@
     <property name="text">
      <string>登 录</string>
     </property>
-    <property name="checkable">
-     <bool>true</bool>
+    <property name="shortcut">
+     <string>Return</string>
     </property>
    </widget>
    <widget class="QToolButton" name="minBtn">
@@ -303,7 +306,7 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>215</y>
+      <y>210</y>
       <width>80</width>
       <height>20</height>
      </rect>
