@@ -13,11 +13,7 @@ class Tray:public QWidget
 public:
     Tray(QWidget *parent);
     ~Tray();
-<<<<<<< HEAD
-=======
-
     void showHit(const QString &title, const QString &str);
->>>>>>> refs/heads/pr/9
 private:
     void initUnlogn();
 

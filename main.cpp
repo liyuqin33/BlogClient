@@ -12,10 +12,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 	BlogEditArea w;
 
-<<<<<<< HEAD
-//    w.setWindowFlags(Qt::FramelessWindowHint);
-    Login qdialog(&w);
-=======
     QFile file(":/default.qss");
     file.open(QFile::ReadOnly);
     Q_ASSERT(file.isOpen());
@@ -23,7 +19,6 @@ int main(int argc, char *argv[])
 
 //    w.setWindowFlags(Qt::FramelessWindowHint);
     Login qdialog(&w, true);
->>>>>>> refs/heads/pr/9
     qdialog.setWindowTitle("登陆界面");
     Tray *tray=qdialog._tray;
     if ( qdialog.exec() == QDialog::Accepted )

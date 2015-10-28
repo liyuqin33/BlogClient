@@ -19,10 +19,6 @@
         <file>Image/close.png</file>
         <file>Image/label.png</file>
         <file>Image/min.png</file>
-<<<<<<< HEAD
-        <file>login.qss</file>
-=======
->>>>>>> refs/heads/pr/9
         <file>Image/login/blog_unlogin.png</file>
         <file>Image/login/close.png</file>
         <file>Image/login/down_arrow.png</file>
@@ -30,12 +26,9 @@
         <file>Image/login/label.png</file>
         <file>Image/login/min.png</file>
         <file>Image/login/blog_logined.png</file>
-<<<<<<< HEAD
-=======
         <file>Image/login/checkBox_unchecked.png</file>
         <file>Image/login/checkBox_checked.png</file>
         <file>Image/login/head_nomal.jpg</file>
         <file>Image/login/head_line.gif</file>
->>>>>>> refs/heads/pr/9
     </qresource>
 </RCC>
