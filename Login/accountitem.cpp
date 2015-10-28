@@ -2,13 +2,14 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QHBoxLayout>
 #include <QMessageBox>
 #include <QDebug>
 
 AccountItem::AccountItem(QWidget *parent, QListWidgetItem *item,
 						 QString ID, QString password, bool isSavePassword)
 	: QWidget(parent)
-    , _label(new QLabel(ID))
+	, _label(new QLabel(ID))
 	, _item(item)
 	, _password(password)
 	, _isSavePassword(isSavePassword)
@@ -17,32 +18,22 @@ AccountItem::AccountItem(QWidget *parent, QListWidgetItem *item,
 	setObjectName("accountItem");
 	_isMousePress = false;
 	//删除按钮
-    _deleteBtn = new QPushButton(this);
+	_deleteBtn = new QPushButton();
 	_deleteBtn->setObjectName("deleteBtn");
 	QPixmap pixmap(":/Image/login/item_del.png");
 	_deleteBtn->setIcon(pixmap);
 	_deleteBtn->setFixedSize(16, 16);//图片周围有空白，将删除按钮与下拉按钮对齐
 	connect(_deleteBtn, &QPushButton::clicked, this, &AccountItem::tryRemoveAccount);
-    //布局
-    _label->setParent(this);
-    _label->setGeometry(5,0,170, 30);
-    _deleteBtn->setGeometry(175,7,16, 16);//将删除按钮与下拉按钮对齐
+	//布局
+	_layout = new QHBoxLayout(this);
+	_layout->addWidget(_label);
+	_layout->addStretch();
+	_layout->addWidget(_deleteBtn);
+//	_layout->setSpacing(5);目的是？
+	_layout->setContentsMargins(5, 5, 0, 5);//将删除按钮与下拉按钮对齐
+	setLayout(_layout);
 }
 AccountItem::~AccountItem(){}
-
-//布局函数
-//void AccountItem::setDelBtn(bool isScrollBar)
-//{
-//    if(isScrollBar)
-//    {
-
-//    }
-//    else
-//    {
-
-//    }
-
-//}
 
 //设置和获取
 void AccountItem::setID(QString account_text)    //设置用户ID
