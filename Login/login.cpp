@@ -1,32 +1,28 @@
 ﻿#include "login.h"
-//接口数据类
+#include "accountitem.h"
 #include "MyUtility.h"
-#include <QDesktopServices>
+#include <QDialog>
 #include <QFile>
 #include <QUrl>
+#include <QDesktopWidget>
+#include <QDesktopServices>
+#include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-//布局事件类
-#include "nofocusframedelegate.h"
-#include "accountitem.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QMouseEvent>
+#include <QPoint>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include <QWidget>
-#include <QLabel>
-#include <QMouseEvent>
 #include <QMessageBox>
-//位置时间动画类
-#include <QDesktopWidget>
-#include <QPropertyAnimation>
-#include <QTimeLine>
-#include <QMovie>
-//调试类
-#include <QDebug>
 
-Login::Login(QWidget *parent,bool isFlash):
+#include <QDebug>
+#include <QTime>
+
+Login::Login(QWidget *parent):
     QDialog(parent),
-    ui(new Ui::Login),
-    _isFlash(isFlash)
+    ui(new Ui::Login)
 {
     initUI();//加载UI
     initData();//初始化数据
@@ -43,7 +39,6 @@ Login::~Login()
 void Login::initData()//初始化数据
 {
     _isLeftMouseBtnPressed = false;
-    _isOldAutoLogin = false;
 }
 void Login::initUI()//加载UI
 {
@@ -52,61 +47,51 @@ void Login::initUI()//加载UI
 	setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     move((QApplication::desktop()->width() - width())/2,(QApplication::desktop()->height() - height())/2);
     show();
-    //渐变动画
-    if(_isFlash)
-    {
-        QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-        animation->setDuration(1000);
-        animation->setStartValue(0);
-        animation->setEndValue(1);
-        animation->start();
-    }
+
     //ui
     ui->setupUi(this);
     ui->loginWidget->show();
-    ui->userNameBox->lineEdit()->setPlaceholderText("Input Your User");//提示
+
     //qss
-    /*
-     * 字体、布局、Tab、鼠标变化在设计窗口设置，其他样式在qss设置
-    */
+    QFile file(":/login.qss");
+    file.open(QFile::ReadOnly);
+	Q_ASSERT(file.isOpen());
+    QString styleSheet = file.readAll();
+    this->setStyleSheet(styleSheet);
 }
 void Login::initTray()//加载系统托盘
 {
     _tray=new Tray((QWidget*)this->parent());
 	connect(_tray, &Tray::showWindow, this, &Login::clickShowBtn);
 	connect(_tray, &Tray::closeWindow, this, &Login::clickCloseBtn);
-    connect(this, &Login::accepted, _tray, &Tray::logned);
+	connect(this, SIGNAL(accepted()), _tray, SLOT(logned()));
 }
 
 void Login::initLink()//加载信号
 {
-    ui->loginBtn->setShortcut(QKeySequence::InsertParagraphSeparator);  //快捷键
-    ui->userNameBox->installEventFilter(this);  //安装过滤器
-    connect(ui->loginBtn, &QPushButton::toggled, this, &Login::login);//登陆
+    connect(ui->loginBtn, SIGNAL(clicked()), this, SLOT(login()));//登陆
 	//自动登陆——使用setClicked函数不会触发clicked信号
-    connect(ui->autoLoginBox, &QCheckBox::clicked, this, &Login::premiseSavePassword);//自动登陆
-    connect(ui->findPasswordBtn, &QPushButton::clicked, this, &Login::findPassword);//找回密码
-    connect(ui->registerBtn, &QPushButton::clicked, this, &Login::registerUser);//注册
-    connect(ui->closeBtn, &QPushButton::clicked, this, &Login::clickCloseBtn);//关闭
-    connect(ui->minBtn, &QToolButton::clicked, this, &Login::clickMinBtn);//最小化
-    connect(ui->userNameBox->lineEdit(), &QLineEdit::textEdited, this, &Login::changUser);//键盘修改用户名称
+	connect(ui->autoLoginBox, &QCheckBox::clicked, this, &Login::premiseSavePassword);
+    connect(ui->findPasswordBtn, SIGNAL(clicked()), this, SLOT(findPassword()));//找回密码
+    connect(ui->registerBtn, SIGNAL(clicked()), this, SLOT(registerUser()));//注册
+    connect(ui->closeBtn, SIGNAL(clicked()), this, SLOT(clickCloseBtn()));
+	connect(ui->minBtn, &QToolButton::clicked, this, &Login::showMinimized);
+
 }
 
 void Login::loadUser()//加载本地用户
 {
     /*此处应把存于本地的用户载入框并判断是否登陆*/
     _listWidget = new QListWidget(this);
-    _listWidget->setItemDelegate(new NoFocusFrameDelegate());
     ui->userNameBox->setEditable(true);
     ui->userNameBox->setModel(_listWidget->model());
     ui->userNameBox->setView(_listWidget);
     //读取文件
     QFile blogInfoFile(USER_INFO_JSON_PATH());
-    qDebug()<<USER_INFO_JSON_PATH();
     blogInfoFile.open(QIODevice::ReadOnly);
     if (!blogInfoFile.isOpen())
     {
-        _tray->showHit(tr("研发博客"), tr("欢迎使用研发博客"));
+        QMessageBox::information(this, "欢迎", "欢迎使用研发博客！");
         qDebug() << "没有读取到用户信息";
         return ;
     }
@@ -117,7 +102,7 @@ void Login::loadUser()//加载本地用户
     QJsonDocument doc = QJsonDocument::fromJson(jsonData, &error);
     if (error.error != QJsonParseError::NoError)
     {
-        _tray->showHit(tr("研发博客"), tr("欢迎使用研发博客"));
+        QMessageBox::information(this, "欢迎", "欢迎使用研发博客！");
         qDebug()<<"读取JSON格式文件错误！"<<error.error;
         return ;
     }
@@ -125,7 +110,7 @@ void Login::loadUser()//加载本地用户
     foreach (QVariant user, result["UserInfo"].toList())
     {
 		QVariantMap accountRecord = user.toMap();
-        QListWidgetItem* item = new QListWidgetItem(_listWidget);
+		QListWidgetItem* item = new QListWidgetItem(_listWidget);
 		AccountItem* accountWidget = new AccountItem(this, item,
 				accountRecord["ID"].toString(),
 				accountRecord["Password"].toString(),
@@ -140,67 +125,49 @@ void Login::loadUser()//加载本地用户
 		showAccount(_listWidget->item(0));
 		if(result["AutoLogin"].toBool())
 		{
-            _isOldAutoLogin=true;    //载入时是否自动登录，决定离线登录和存储信息
 			ui->autoLoginBox->setChecked(true);//根据该按钮状态保存信息，所以需要设置
-            ui->loginBtn->animateClick();
+			ui->loginBtn->animateClick();
 		}
-        else _isOldAutoLogin=false;
-    }
+	}
 }
 
 //响应函数
 void Login::clickShowBtn()//点击恢复响应函数
 {
-    setFixedSize(300,350);//为了适应系统不同
+	this->showNormal();
 	this->raise();//顶置到最顶层，在始终最顶的下面
 }
 
 void Login::clickCloseBtn()//点击关闭响应函数
 {
-    saveUser(false);
+	saveUser();
     close();
 }
 
-void Login::clickMinBtn()//点击最小化响应函数
+void Login::login()//点击登陆响应函数
 {
-    setFixedSize(0,0);
-}
-
-void Login::login(bool isDown)//点击登陆响应函数(登陆或取消登陆)
-{
-    if(isDown)
+    //发送信号给后台(判断是否加密)
+    AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(ui->userNameBox->currentIndex()));
+    if(ui->userNameBox->lineEdit()->text() == account->getID()
+            && ui->passwordEdit->text() == account->getPassword())
     {
-        if(_isOldAutoLogin)//自动登录
-        {
-            isSuccessfulLoaded(LOG_IN);
-            return;
-        }
-        //发送信号给后台(判断是否加密)
-        if(_listWidget->count()>0)
-        {
-            AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(ui->userNameBox->currentIndex()));
-            if(ui->userNameBox->lineEdit()->text() == account->getID()
-                    && ui->passwordEdit->text() == account->getPassword())
-                emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), true);
-            else
-                emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), false);
-        }
-        else
-        {
-            emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), false);
-        }
-        qDebug()<<"登陆界面发出登陆信号"<<ui->userNameBox->lineEdit()->text()<<ui->passwordEdit->text();
-
-        //登陆中界面
-        showLoginInterface();
-        //该句调试用-------------------------------------
-        //调试的地方换在timesUp()
+        emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), true);
     }
     else
     {
-        emit unLogining();
-        endLoginInterface();
+        emit logining(ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), false);
     }
+    qDebug()<<"登陆界面发出登陆信号"<<ui->userNameBox->lineEdit()->text()<<ui->passwordEdit->text();
+
+    //登陆中界面
+	showLoginInterface();
+	//该句调试用-------------------------------------
+	QTime t = QTime::currentTime();
+	while (t.secsTo(QTime::currentTime()) < 3)
+	{
+		QApplication::processEvents();
+	}
+	isSuccessfulLoaded(LOG_IN);
 }
 void Login::registerUser()//点击注册响应函数
 {
@@ -224,24 +191,6 @@ void Login::premiseSavePassword(bool isPitchOn)//自动登陆必须记住密码�
 	if(isPitchOn) ui->savePasswordBox->setChecked(isPitchOn);
 }
 
-void Login::changUser(const QString & editUser)//键盘修改用户名称
-{
-    qDebug()<<editUser<<_listWidget->count();
-
-    for(int i=0; i<_listWidget->count(); i++)//相同变选择
-    {
-        AccountItem* findItem=((AccountItem*)_listWidget->itemWidget(_listWidget->item(i)));
-        if(editUser == findItem->getID())
-        {
-            showAccount(_listWidget->item(i));
-            return;
-        }
-    }
-    ui->passwordEdit->clear();
-    ui->autoLoginBox->setChecked(false);
-    ui->savePasswordBox->setChecked(false);
-}
-
 //用户交互-QComboBox
 void Login::showAccount(QListWidgetItem *item)//将选项文本显示在QComboBox当中
 {
@@ -250,7 +199,7 @@ void Login::showAccount(QListWidgetItem *item)//将选项文本显示在QComboBo
 	ui->userNameBox->setCurrentIndex(_listWidget->row(item));
 	ui->userNameBox->setEditText(account->getID());
 	ui->passwordEdit->setText(account->getPassword());//详见saveAccount的注释
-    ui->savePasswordBox->setChecked(account->getIsSavePassword());
+	ui->savePasswordBox->setChecked(account->getIsSavePassword());
 }
 void Login::removeAccount(QListWidgetItem *item)//删除帐号时，弹出提示框，与用户进行交互，告知是否确定要删除此帐号的所有信息！
 {
@@ -276,168 +225,33 @@ void Login::removeAccount(QListWidgetItem *item)//删除帐号时，弹出提示
 	}
 }
 
-//用户交互-登录中
-void Login::showLoginInterface()
-{
-    //重新布局
-    ui->userNameBox->hide();
-    ui->passwordEdit->hide();
-    ui->registerBtn->hide();
-    ui->findPasswordBtn->hide();
-    ui->savePasswordBox->hide();
-    ui->autoLoginBox->hide();
-    ui->hintLabel->setText("");
-    //文字
-    ui->hintLabel->setText("");
-    ui->loginBtn->setText("取消登录");
-    ui->loginBtn->setShortcut(QKeySequence::InsertParagraphSeparator);  //更改文本快捷键消失，重设
-    //头像窗口
-    _headWidget = new QWidget(ui->loginWidget);
-    int width = 120;
-    int height = 120;
-    int x = this->width() / 2 - width / 2;
-    int y = this->height() / 2 - height / 2 - 10;
-    //转动边框(120*120)
-    _headLineMovie = new QMovie(":/Image/login/head_line.gif");
-    _headLine= new QLabel(_headWidget);
-    _headLine->setMovie(_headLineMovie);
-    _headLine->setGeometry(0,0,120,120);
-    _headLine->show();
-    //头像图片（100*100）
-    _headPix= new QLabel(_headWidget);
-    _headPix->setStyleSheet ("border:1px groove gray;"
-                             "border-radius:50px;"
-                             "background-repeat:no-repeat;"
-                             "background-image: url(:/Image/login/head_nomal.jpg);");
-    _headPix->setGeometry(10,10,100,100);
-    _headPix->show();
-    if(_isFlash)//动画
-    {
-        QPropertyAnimation *animation = new QPropertyAnimation(_headWidget, "geometry");
-        animation->setDuration(500);
-        animation->setStartValue(QRect(-width, y, width, height));
-        animation->setKeyValueAt(0.15, QRect(0, y, width, height));
-        animation->setKeyValueAt(0.5, QRect(x+5, y, width, height));
-        animation->setKeyValueAt(0.75, QRect(x-5, y, width, height));
-        animation->setEndValue(QRect(x, y, width, height));
-        animation->start();
-    }
-    else//无动画
-    {
-        _headWidget->setFixedSize(120, 120);
-        _headWidget->move(this->width() / 2 - _headWidget->width() / 2,
-                       this->height() / 2 - _headWidget->height() / 2 - 10);
-    }
-    _headWidget->show();
-    _headLineMovie->start();
-    //时间循环(10秒200帧)
-    _timeLine = new QTimeLine(10000, this);
-    _timeLine->setFrameRange(0, 200);
-    _timeLine->setCurveShape(QTimeLine::LinearCurve);
-    connect(_timeLine, &QTimeLine::frameChanged, this, &Login::timesUp);
-    _timeLine->start();
-}
-
-
-void Login::endLoginInterface()
-{
-    qDebug()<<"取消登陆";
-    //重新布局
-    disconnect(_timeLine, &QTimeLine::frameChanged, this, &Login::timesUp);
-    ui->userNameBox->show();
-    ui->passwordEdit->show();
-    ui->registerBtn->show();
-    ui->findPasswordBtn->show();
-    ui->savePasswordBox->show();
-    ui->autoLoginBox->show();
-    delete _headWidget;
-    ui->hintLabel->setText("");
-    ui->loginBtn->setText("登录");
-    ui->loginBtn->setShortcut(QKeySequence::InsertParagraphSeparator);  //更改文本快捷键消失，重设
-}
-
-void Login::timesUp(int time)
-{
-    if(time%2==0) qDebug()<<"第"<<time/20.0<<"秒";
-    //文字
-    if(time >= 10 && time%10==0)//0.5秒一次
-    {
-        if(ui->hintLabel->text()=="")
-            ui->hintLabel->setText("登录中");
-        else if(ui->hintLabel->text()=="登录中...")
-            ui->hintLabel->setText("登录中");
-        else
-            ui->hintLabel->setText(ui->hintLabel->text()+".");
-    }
-    if(time>=200)//时间到，登陆超时
-    {
-        endLoginInterface();
-        isSuccessfulLoaded(ERROR_UNNET);
-    }
-    //该句调试用！！！！！
-    if(time >= 60)//三秒
-    {
-        isSuccessfulLoaded(LOG_IN);
-    }
-}
-
 //后台交互
 void Login::isSuccessfulLoaded(Load type)//后台返回是否能登陆对接的槽函数
 {
-    disconnect(ui->loginBtn, &QPushButton::toggled, this, &Login::login);//断开连接以便按钮弹起
     switch(type)
     {
         case LOG_IN:
-        {
             //移除托盘连接，储存用户登录信息
-            disconnect(_tray, &Tray::showWindow, this, &Login::clickShowBtn);
-            disconnect(_tray, &Tray::closeWindow, this, &Login::clickCloseBtn);
-            if(_isOldAutoLogin)//自动登陆
-            {
-                saveUser(true);
-                this->Login::done();
-                break;
-            }
-            disconnect(_timeLine, &QTimeLine::frameChanged, this, &Login::timesUp);
-            _tray->showHit(tr("研发博客-登录"), tr("登录成功"));
-            addCurrentUser();
-            saveUser(true);
-            //关闭渐变
-            if(_isFlash)
-            {
-                //动画
-                QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-                animation->setDuration(1000);
-                animation->setStartValue(1);
-                animation->setEndValue(0);
-                animation->start();
-                connect(animation, &QPropertyAnimation::finished, this, Login::done);
-            }
-            else
-                this->Login::done();
-            return;
-        }
+//            disconnect(_tray, SIGNAL(showWindow()), this, SLOT(clickShowBtn()));
+//            disconnect(_tray, SIGNAL(closeWindow()), this, SLOT(clickCloseBtn()));
+			addCurrentUser();
+			saveUser();
+            this->Login::done();
+			break;
         case ERROR_PASSWORD:
-            _tray->showHit(tr("研发博客-登录"), tr("密码错误"));
             ui->hintLabel->setText("密码错误");
-            ui->passwordEdit->clear();
+//            ui->passwordEdit->clear();
             ui->passwordEdit->setFocus();
-            ui->loginBtn->setChecked(false);
             break;
         case ERROR_UNNET:
-            _tray->showHit(tr("研发博客-登录"), tr("网络超时"));
-            ui->hintLabel->setText("网络超时");
-            ui->loginBtn->setChecked(false);
+            ui->hintLabel->setText("无法连接网络");
             break;
         case ERROR_USER:
-            _tray->showHit(tr("研发博客-登录"), tr("用户名不存在"));
             ui->hintLabel->setText("用户名不存在");
             ui->passwordEdit->clear();
             ui->userNameBox->setFocus();
-            ui->loginBtn->setChecked(false);
             break;
     }
-    connect(ui->loginBtn, &QPushButton::toggled, this, &Login::login);
 }
 
 //结束
@@ -467,7 +281,7 @@ void Login::addCurrentUser()
 	_listWidget->setItemWidget(item, account);
 }
 
-void Login::saveUser(bool isSuccessfulLoaded)//添加本地用户
+void Login::saveUser()//添加本地用户
 {
     /*此处应把成功登陆用户存于本地*/
     QVariantList userList;
@@ -475,16 +289,13 @@ void Login::saveUser(bool isSuccessfulLoaded)//添加本地用户
     for(int i=0; i<_listWidget->count(); i++)
     {
         QVariantMap jsonItem;
-        AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(i));
+		AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(i));
 		saveAccount(jsonItem, account->getID(), account->getPassword(), account->getIsSavePassword());
 		userList << jsonItem;
     }
     QVariantMap all;
     all.insert("UserInfo", userList);
-    if(isSuccessfulLoaded)  //登录成功记录用户是否自动登陆
-        all.insert("AutoLogin", ui->autoLoginBox->isChecked());
-    else    //失败保留原来的数据
-        all.insert("AutoLogin", _isOldAutoLogin);
+	all.insert("AutoLogin", ui->autoLoginBox->isChecked());
     QJsonDocument doc = QJsonDocument::fromVariant(all);
     if (!doc.isNull())
     {
@@ -514,6 +325,24 @@ void Login::saveAccount(QVariantMap &item,
 		item.insert("Password", password);
 }
 
+void Login::showLoginInterface()
+{
+	ui->userNameBox->hide();
+	ui->passwordEdit->hide();
+	ui->savePasswordBox->hide();
+	ui->autoLoginBox->hide();
+	ui->registerBtn->hide();
+	ui->findPasswordBtn->hide();
+	ui->loginBtn->hide();
+	auto userLogo = new QLabel(this);
+	userLogo->setPixmap(QPixmap(":/Image/head2.jpg"));
+	userLogo->setScaledContents(true);
+	userLogo->setFixedSize(128, 128);
+	userLogo->move(this->width() / 2 - userLogo->width() / 2,
+				   this->height() / 2 - userLogo->width() / 2);
+	userLogo->show();
+}
+
 //鼠标拖动事件
 void Login::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -538,18 +367,4 @@ void Login::mouseMoveEvent(QMouseEvent *event)
         _ptLast  = event->globalPos();
     }
     event->ignore();
-}
-
-//事件过滤器使滚轮失效
-bool Login::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj == ui->userNameBox)
-    {
-        if (event->type() == QEvent::Wheel)
-           return true;
-        else
-           return false;
-    }
-    else
-        return Login::eventFilter(obj, event);
 }

@@ -5,6 +5,7 @@
 
 class QPushButton;
 class QLabel;
+class QHBoxLayout;
 class QListWidgetItem;
 
 
@@ -24,7 +25,8 @@ public:
 private:
 	//布局
 	QPushButton* _deleteBtn;
-    QLabel* _label;
+	QLabel* _label;
+	QHBoxLayout* _layout;
 	//数据
 	QListWidgetItem *_item;
 	QString _password;
