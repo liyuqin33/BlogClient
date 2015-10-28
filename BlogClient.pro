@@ -13,30 +13,47 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    titlebar.cpp \
-    BlogEditArea.cpp \
-    blogheadview.cpp \
-    CustomFilterModel.cpp \
-    customlistwidget.cpp \
-    editview.cpp \
+    WebCorrespond/article.cpp \
+    BlogEditArea/BlogEditArea.cpp \
+    BlogEditArea/blogheadview.cpp \
+    BlogEditArea/CustomFilterModel.cpp \
+    BlogEditArea/customlistwidget.cpp \
+    BlogEditArea/editview.cpp \
+    MessageWidget/itemwidget.cpp \
+    MessageWidget/piclabel.cpp \
+    MessageWidget/statewidget.cpp \
+    MessageWidget/widget.cpp \
+    Login/login.cpp \
+    Login/tray.cpp \
     MyUtility.cpp \
-    WebCorrespond/article.cpp
+    Login/accountitem.cpp \
+    Login/nofocusframedelegate.cpp
 
-HEADERS  += mainwindow.h \
-    titlebar.h \
-    BlogEditArea.h \
-    blogheadview.h \
-    CustomFilterModel.h \
-    customlistwidget.h \
-    editview.h \
+HEADERS  += \
+    WebCorrespond/article.h \
+    BlogEditArea/BlogEditArea.h \
+    BlogEditArea/blogheadview.h \
+    BlogEditArea/CustomFilterModel.h \
+    BlogEditArea/customlistwidget.h \
+    BlogEditArea/editview.h \
+    MessageWidget/itemwidget.h \
+    MessageWidget/piclabel.h \
+    MessageWidget/statewidget.h \
+    MessageWidget/widget.h \
+    Login/login.h \
+    Login/tray.h \
     MyUtility.h \
-    WebCorrespond/article.h
+    Login/accountitem.h \
+    Login/nofocusframedelegate.h
 
 RESOURCES += \
-	BlogClient.qrc
+        BlogClient.qrc
+
 
 CONFIG += c++11
 
 FORMS += \
-    BlogEditArea.ui
+    BlogEditArea/BlogEditArea.ui \
+    Login/login.ui
+
+DISTFILES +=

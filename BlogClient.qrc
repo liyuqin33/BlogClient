@@ -1,17 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>BlogImages/app.png</file>
-        <file>BlogImages/close.png</file>
-        <file>BlogImages/down.png</file>
-        <file>BlogImages/lock.png</file>
-        <file>BlogImages/logo.png</file>
-        <file>BlogImages/min.png</file>
-        <file>BlogImages/shirt.png</file>
-        <file>BlogImages/fullscreen.png</file>
-        <file>BlogImages/unlock.png</file>
         <file>default.qss</file>
-        <file>BlogImages/001.jpg</file>
-        <file>BlogImages/hello.jpg</file>
         <file>Image/bg0.png</file>
         <file>Image/bg1.png</file>
         <file>Image/C++.png</file>
@@ -19,5 +8,27 @@
         <file>Image/NewCustom.png</file>
         <file>Data/blogSkim.html</file>
         <file>Image/arrow_down.png</file>
+        <file>Image/ArticleManager.png</file>
+        <file>Image/LinkWidget.png</file>
+        <file>Image/Messenger.png</file>
+        <file>Image/hello.jpg</file>
+        <file>Image/bg.jpg</file>
+        <file>Image/head1.jpg</file>
+        <file>Image/head2.jpg</file>
+        <file>Image/head3.jpg</file>
+        <file>Image/close.png</file>
+        <file>Image/label.png</file>
+        <file>Image/min.png</file>
+        <file>Image/login/blog_unlogin.png</file>
+        <file>Image/login/close.png</file>
+        <file>Image/login/down_arrow.png</file>
+        <file>Image/login/item_del.png</file>
+        <file>Image/login/label.png</file>
+        <file>Image/login/min.png</file>
+        <file>Image/login/blog_logined.png</file>
+        <file>Image/login/checkBox_unchecked.png</file>
+        <file>Image/login/checkBox_checked.png</file>
+        <file>Image/login/head_nomal.jpg</file>
+        <file>Image/login/head_line.gif</file>
     </qresource>
 </RCC>

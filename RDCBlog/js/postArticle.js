@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    //加载完毕即刻判断登陆状态
     (function(){
         $(".title_txt").val(article.title);
         editor.html(article.content);

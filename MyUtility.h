@@ -10,4 +10,6 @@ const QUrl& POST_ARTICLE_HTML_URL();
 
 const QString& BLOG_INFO_JSON_PATH();
 
+const QString &USER_INFO_JSON_PATH();
+
 #endif

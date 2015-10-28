@@ -1,6 +1,6 @@
 ﻿#include "MyUtility.h"
 #include <QDir>
-#include "CustomFilterModel.h"
+#include "BlogEditArea/CustomFilterModel.h"
 #include <QDebug>
 
 const QString& STORE_PATH()
@@ -16,8 +16,16 @@ const QUrl &POST_ARTICLE_HTML_URL()
 }
 
 
+
+
 const QString &BLOG_INFO_JSON_PATH()
 {
-	static const QString blogInfoJsonPath = STORE_PATH() + "/BlogEdit.json";
-	return blogInfoJsonPath;
+    static const QString blogInfoJsonPath = QDir::currentPath() + "/BlogEdit.json";
+    return blogInfoJsonPath;
+}
+
+const QString &USER_INFO_JSON_PATH()
+{
+	static const QString userInfoJsonPath = QDir::currentPath() + "/UserData.json";
+    return userInfoJsonPath;
 }
