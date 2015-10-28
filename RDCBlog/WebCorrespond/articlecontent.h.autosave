@@ -1,0 +1,24 @@
+﻿#ifndef ARTICLECONTENT_H
+#define ARTICLECONTENT_H
+
+#include <QObject>
+
+class ArticleContent : public QObject
+{
+	Q_OBJECT
+	Q_PROPERTY(QString Content READ getContent WRITE setContent NOTIFY contentChanged)
+public:
+	explicit ArticleContent(QObject *parent = 0);
+	~ArticleContent();
+	QString& getContent(){return _content;}
+	void setContent(const QString &content){_content = content;}
+	
+	Q_INVOKABLE void save();
+signals:
+	void contentChanged();
+
+private:
+	QString _content;
+};
+
+#endif // ARTICLECONTENT_H

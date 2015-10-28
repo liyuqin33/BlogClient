@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>default.qss</file>
+        <file>Image/bg0.png</file>
+        <file>Image/bg1.png</file>
+        <file>Image/C++.png</file>
+        <file>Image/NewBlog.png</file>
+        <file>Image/NewCustom.png</file>
+        <file>Data/blogSkim.html</file>
+        <file>Image/arrow_down.png</file>
+        <file>Image/ArticleManager.png</file>
+        <file>Image/LinkWidget.png</file>
+        <file>Image/Messenger.png</file>
+        <file>Image/hello.jpg</file>
+        <file>Image/bg.jpg</file>
+        <file>Image/head1.jpg</file>
+        <file>Image/head2.jpg</file>
+        <file>Image/head3.jpg</file>
+        <file>Image/close.png</file>
+        <file>Image/label.png</file>
+        <file>Image/min.png</file>
+        <file>Image/login/blog_unlogin.png</file>
+        <file>Image/login/close.png</file>
+        <file>Image/login/down_arrow.png</file>
+        <file>Image/login/item_del.png</file>
+        <file>Image/login/label.png</file>
+        <file>Image/login/min.png</file>
+        <file>Image/login/blog_logined.png</file>
+        <file>Image/login/checkBox_unchecked.png</file>
+        <file>Image/login/checkBox_checked.png</file>
+        <file>Image/login/head_nomal.jpg</file>
+        <file>Image/login/head_line.gif</file>
+    </qresource>
+</RCC>
