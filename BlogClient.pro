@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     Login/login.cpp \
     Login/tray.cpp \
     MyUtility.cpp \
-    Login/accountitem.cpp
+    Login/accountitem.cpp \
+    Login/nofocusframedelegate.cpp
 
 HEADERS  += \
     WebCorrespond/article.h \
@@ -42,7 +43,8 @@ HEADERS  += \
     Login/login.h \
     Login/tray.h \
     MyUtility.h \
-    Login/accountitem.h
+    Login/accountitem.h \
+    Login/nofocusframedelegate.h
 
 RESOURCES += \
         BlogClient.qrc
@@ -53,3 +55,5 @@ CONFIG += c++11
 FORMS += \
     BlogEditArea/BlogEditArea.ui \
     Login/login.ui
+
+DISTFILES +=
