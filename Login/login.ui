@@ -129,7 +129,11 @@
     <property name="geometry">
      <rect>
       <x>170</x>
+<<<<<<< HEAD
       <y>210</y>
+=======
+      <y>215</y>
+>>>>>>> refs/heads/pr/9
       <width>80</width>
       <height>20</height>
      </rect>
@@ -184,31 +188,50 @@
     <property name="cursor">
      <cursorShape>IBeamCursor</cursorShape>
     </property>
+<<<<<<< HEAD
     <property name="focusPolicy">
      <enum>Qt::WheelFocus</enum>
     </property>
+=======
+>>>>>>> refs/heads/pr/9
     <property name="editable">
      <bool>true</bool>
     </property>
     <property name="maxVisibleItems">
      <number>5</number>
     </property>
+<<<<<<< HEAD
     <property name="maxCount">
      <number>10</number>
     </property>
     <property name="insertPolicy">
      <enum>QComboBox::NoInsert</enum>
     </property>
+=======
+>>>>>>> refs/heads/pr/9
    </widget>
    <widget class="QLabel" name="hintLabel">
     <property name="geometry">
      <rect>
       <x>100</x>
+<<<<<<< HEAD
       <y>240</y>
+=======
+      <y>245</y>
+>>>>>>> refs/heads/pr/9
       <width>100</width>
       <height>15</height>
      </rect>
     </property>
+<<<<<<< HEAD
+=======
+    <property name="font">
+     <font>
+      <family>幼圆</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+>>>>>>> refs/heads/pr/9
     <property name="text">
      <string/>
     </property>
@@ -240,8 +263,13 @@
     <property name="text">
      <string>登 录</string>
     </property>
+<<<<<<< HEAD
     <property name="shortcut">
      <string>Return</string>
+=======
+    <property name="checkable">
+     <bool>true</bool>
+>>>>>>> refs/heads/pr/9
     </property>
    </widget>
    <widget class="QToolButton" name="minBtn">
@@ -306,7 +334,11 @@
     <property name="geometry">
      <rect>
       <x>50</x>
+<<<<<<< HEAD
       <y>210</y>
+=======
+      <y>215</y>
+>>>>>>> refs/heads/pr/9
       <width>80</width>
       <height>20</height>
      </rect>

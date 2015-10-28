@@ -20,7 +20,11 @@ const QUrl &POST_ARTICLE_HTML_URL()
 
 const QString &BLOG_INFO_JSON_PATH()
 {
+<<<<<<< HEAD
 	static const QString blogInfoJsonPath = QDir::currentPath() + "/BlogEdit.json";
+=======
+    static const QString blogInfoJsonPath = QDir::currentPath() + "/BlogEdit.json";
+>>>>>>> refs/heads/pr/9
     return blogInfoJsonPath;
 }
 

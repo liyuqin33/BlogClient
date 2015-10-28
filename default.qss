@@ -24,6 +24,7 @@ QPushButton#editBtn:hover, QPushButton#saveBtn:hover
 QPushButton:disabled{
     background-color: gray;
     border: 1px;
+<<<<<<< HEAD
 }
 
 
@@ -36,6 +37,20 @@ QPushButton::menu-arrow, QPushButton::menu-indicator {
     image: none;
 }
 
+=======
+}
+
+
+
+QPushButton::menu-button {
+    border: none;
+}
+
+QPushButton::menu-arrow, QPushButton::menu-indicator {
+    image: none;
+}
+
+>>>>>>> refs/heads/pr/9
 /*****QToolButton样式*****/
 QToolButton{
     background-color: transparent;
@@ -112,6 +127,7 @@ QTabBar::tab:selected, QTabBar::tab:hover
     background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0,
                 stop:0 rgba(39, 117, 219, 255), stop:1 rgba(107, 171, 249, 255));
 }
+<<<<<<< HEAD
 
 QTabBar::tab:!selected
 {
@@ -146,12 +162,48 @@ QToolButton#closeBtn:hover
 }
 QToolButton#closeBtn:pressed, QToolButton#minBtn:pressed
 {
+=======
+
+QTabBar::tab:!selected
+{
+    margin-top: 2px;
+}
+QTabWidget::pane
+{
+    border-top: 2px solid #C2C7CB;
+}
+QTabWidget::tab-bar
+{
+    left: 5px;
+}
+
+/************login窗口****************/
+/* 窗口 */
+QWidget#loginWidget{
+    border: 2px solid rgb(95,134,200);
+    background-color: #5789dc;
+}
+
+/* 窗口按钮 */
+QToolButton#closeBtn, QToolButton#minBtn{
+    background-color: #5789dc;
+    border: none;
+}
+QToolButton#closeBtn:hover{
+    background-color: red;
+}
+QToolButton#closeBtn:pressed, QToolButton#minBtn:pressed{
+>>>>>>> refs/heads/pr/9
     padding-top: 2px;
 }
 
 /* 登录按钮 */
+<<<<<<< HEAD
 QPushButton#loginBtn
 {
+=======
+QPushButton#loginBtn{
+>>>>>>> refs/heads/pr/9
     color: #f6f8f6;
     background-color: #71bd75;
     border: 1px;
@@ -159,14 +211,19 @@ QPushButton#loginBtn
     border-top-style: none;
     border-bottom: 1px solid gray;
 }
+<<<<<<< HEAD
 QPushButton#loginBtn:hover
 {
+=======
+QPushButton#loginBtn:hover{
+>>>>>>> refs/heads/pr/9
     background-color: #6ab06d;
 }
 QPushButton#loginBtn:pressed
 {
     background-color: #62a466;
     padding-top: 2px;
+<<<<<<< HEAD
 }
 
 /* 跳转按钮 */
@@ -182,10 +239,32 @@ QPushButton#registerBtn:hover,QPushButton#findPasswordBtn:hover
 }
 QPushButton#registerBtn:pressed, QPushButton#findPasswordBtn:pressed
 {
+=======
+    QPushButton#loginBtn:checked
+    {
+        padding-top: 0px;
+    }
+}
+QPushButton#loginBtn:checked{
+    background-color: #62a466;
+}
+
+/* 跳转按钮 */
+QPushButton#registerBtn,QPushButton#findPasswordBtn{
+    color: #f6f8f6;
+    background-color: transparent;
+    border: none;
+}
+QPushButton#registerBtn:hover,QPushButton#findPasswordBtn:hover{
+    text-decoration: underline;
+}
+QPushButton#registerBtn:pressed, QPushButton#findPasswordBtn:pressed{
+>>>>>>> refs/heads/pr/9
     text-decoration: underline;
     padding-top: 2px;
 }
 
+<<<<<<< HEAD
 
 
 QCheckBox#autoEnterBox
@@ -213,7 +292,127 @@ QComboBox::drop-down {
 
 QComboBox::down-arrow {
   image: url(:/misc/down_arrow_2);
+=======
+/* 提示标签 */
+QLabel#hintLabel{
+    color: #f6f8f6;
+}
+
+/* 密码 */
+QLineEdit#passwordEdit{
+    background: #e9f2f7;
+}
+
+/* 用户名-外壳 */
+QComboBox#userNameBox {
+    border: 1px solid rgb(25, 163, 229);
+    padding: 1px 2px 1px 2px;   /* 针对于组合框中的文本内容 */
+    background: #e9f2f7;
+>>>>>>> refs/heads/pr/9
+}
+
+/* 用户名-下拉 */
+QComboBox#userNameBox::drop-down {
+    border: none;
+    width:32px;
+}
+QComboBox#userNameBox::down-arrow
+{
+    image: url(:/Image/login/down_arrow.png);
+}
+QComboBox#userNameBox::down-arrow:on {
+    top: 1px;
+    background: transparent;
+}
+
+/* 用户名-条目 */
+QComboBox#userNameBox QAbstractItemView::item {
+    height: 20px;
+    background: #e9eff5;
+}
+QComboBox#userNameBox QAbstractItemView::item:hover {
+    background: #dae7f2;
+}
+QComboBox#userNameBox QAbstractItemView::item:pressed {
+    background: rgba(87,137,220,100%);
+    top: 1px;
+}
+QPushButton#deleteBtn{
+    background-color: transparent;
+}
+/* 用户名-滚动条 */
+QComboBox#userNameBox QScrollBar:vertical{
+    background:rgba(87,137,220,0%);
+    width:8px;
+    margin:0px,0px,0px,0px;
+    padding-top:9px;   /* 留出9px给上面和下面的箭头 */
+    padding-bottom:9px;
+}
+QComboBox#userNameBox QScrollBar::handle:vertical{
+    width:8px;
+    background:rgba(87,137,220,25%);
+    border-radius:4px;   /* 滚动条两端变成椭圆 */
+    min-height:20;
+}
+QComboBox#userNameBox QScrollBar::handle:vertical:hover{
+    width:8px;
+    background:rgba(87,137,220,50%);
+    border-radius:4px;
+    min-height:20;
+}
+QComboBox#userNameBox QScrollBar::add-line:vertical{
+    height:9px;width:8px;
+    background:rgba(87,137,220,35%);
+    subcontrol-position:bottom;
+    subcontrol-origin: margin;
+}
+QComboBox#userNameBox QScrollBar::sub-line:vertical{
+    height:9px;width:8px;
+    background:rgba(87,137,220,35%);
+    subcontrol-position:top;
+    subcontrol-origin: margin;
+}
+QComboBox#userNameBox QScrollBar::add-line:vertical:hover{
+    height:9px;width:8px;
+    background:rgba(87,137,220,60%);
+    subcontrol-position:bottom;
+}
+QComboBox#userNameBox QScrollBar::sub-line:vertical:hover{
+    height:9px;width:8px;
+    background:rgba(87,137,220,60%);
+    subcontrol-position:top;
+}
+QComboBox#userNameBox QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{/* 当滚动条滚动的时候，上面的部分和下面的部分 */
+    background:rgba(87,137,220,10%);
+    border-radius:4px;
+}
+
+/* 单选框 */
+QCheckBox#savePasswordBox, QCheckBox#autoLoginBox{
+    color: white;
+    border-radius:2px;
+}
+QCheckBox::indicator:unchecked, QCheckBox#autoLoginBox::indicator:unchecked
+{
+    image:url(:/Image/login/checkBox_unchecked.png);
+}
+QCheckBox::indicator:checked, QCheckBox#autoLoginBox::indicator:checked
+{
+    image:url(:/Image/login/checkBox_checked.png);
 }
 
 
-
+/************托盘菜单****************/
+QMenu#trayMenu {
+    background-color: white;
+    border: 1px solid #dae7f2;
+}
+QMenu#trayMenu::item {
+    background-color: transparent;
+    border: none;
+    padding:8px 32px;
+    border-bottom:1px solid #dae7f2;
+}
+QMenu#trayMenu::item:selected  {
+    background: #e9eff5;
+}
