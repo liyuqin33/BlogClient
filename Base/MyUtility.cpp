@@ -15,9 +15,6 @@ const QUrl &POST_ARTICLE_HTML_URL()
 	return postArticleHtmlUrl;
 }
 
-
-
-
 const QString &BLOG_INFO_JSON_PATH()
 {
     static const QString blogInfoJsonPath = QDir::currentPath() + "/BlogEdit.json";

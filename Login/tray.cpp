@@ -1,13 +1,16 @@
 ﻿#include "tray.h"
+#include "BlogEditArea/BlogEditArea.h"
+#include "login.h"
 #include <QMenu>
-
+#include <QDesktopWidget>
 
 #include <QDebug>
 #include <QFile>
+#include <functional>
 
 
-Tray::Tray(QWidget* parent)
-    :QWidget(parent)
+Tray::Tray(QObject *parent)
+	:QObject(parent)
 {
     initUnlogn();
 }
@@ -20,24 +23,48 @@ Tray::~Tray()
 void Tray::initUnlogn()
 {
     //托盘菜单
-    _trayIconMenu = new QMenu((QWidget*)this->parent());
+	_trayIconMenu = new QMenu();
 
     _trayIconMenu->setObjectName("trayMenu");
 
-    QAction* loginAction=new QAction(QIcon(""), "登录", (QWidget*)this->parent());
+	QAction* loginAction=new QAction("登录", _trayIconMenu);
     connect(loginAction, SIGNAL(triggered()), this, SLOT(actionLogin()));
     _trayIconMenu->addAction(loginAction);
-    QAction* closeAction=new QAction(QIcon(""), "关闭", (QWidget*)this->parent());
+	QAction* closeAction=new QAction("关闭", _trayIconMenu);
     connect(closeAction, SIGNAL(triggered()), this, SLOT(actionClose()));
     _trayIconMenu->addAction(closeAction);
     //系统托盘
     _trayIcon=new QSystemTrayIcon((QWidget*)this->parent());
     _trayIcon->setIcon(QIcon(":/Image/login/blog_unlogin.png"));
-    _trayIcon->setContextMenu(_trayIconMenu);
+	_trayIcon->setContextMenu(_trayIconMenu);
     _trayIcon->show();
 
     connect(_trayIcon, &QSystemTrayIcon::activated, this, &Tray::iconIsActived);
-    _trayIcon->setToolTip(tr("研发博客"));
+	_trayIcon->setToolTip(tr("研发博客"));
+}
+
+void Tray::initBlogArea()
+{
+	BlogEditArea *w = new BlogEditArea();
+	w->_splashLabel = new QLabel(w);
+	w->_splashLabel->setPixmap(QPixmap(":/Image/hello.jpg"));
+	w->_splashLabel->setScaledContents(true);
+	w->_splashLabel->setAttribute(Qt::WA_DeleteOnClose);
+	w->_splashLabel->resize(QApplication::desktop()->availableGeometry().size());
+	w->_splashLabel->move(0, 0);
+	w->showMaximized();
+	w->initWidgets();
+}
+
+void Tray::setLoginWidget(Login *loginWidget)
+{
+	_loginWidget = loginWidget;
+	connect(this, &Tray::showWindow, _loginWidget, &Login::clickShowBtn);
+	connect(this, &Tray::closeWindow, _loginWidget, &Login::showMinimized);
+	connect(_loginWidget, &Login::successfulLogin, this, &Tray::logned);
+
+	connect(_loginWidget, &Login::sendMessage,
+			std::bind(&Tray::showHit, this, "研发博客-登录", std::placeholders::_1));
 }
 
 //公有函数
@@ -49,6 +76,7 @@ void Tray::showHit(const QString & title, const QString & str)//在系统托盘�
 
 void Tray::logned()//功能未完善
 {
+	_loginWidget->close();
     //托盘菜单
     _trayIconMenu->clear();
 
@@ -69,6 +97,8 @@ void Tray::logned()//功能未完善
     _trayIcon->setIcon(QIcon(":/Image/login/blog_logined.png"));
     _trayIcon->setContextMenu(_trayIconMenu);
     _trayIcon->show();
+
+	initBlogArea();
 }
 
 //私有响应函数
@@ -76,7 +106,7 @@ void Tray::iconIsActived(QSystemTrayIcon::ActivationReason reason)
 {
 
     /*
-     * ???当窗口未缩下，信号发出不能顶置窗口
+	 * ???当窗口未缩下，信号发出不能顶置窗口
      */
 
     switch(reason)
@@ -105,14 +135,17 @@ void Tray::iconIsActived(QSystemTrayIcon::ActivationReason reason)
 }
 void Tray::actionLogin()
 {
+	qDebug() << "Action Login" << endl;
     emit showWindow();
 }
 void Tray::actionClose()
 {
+	qDebug() << "Action Close" << endl;
     emit closeWindow();
 }
 void Tray::actionShow()
 {
+	qDebug() << "Action Show" << endl;
     emit showWindow();
 }
 void Tray::actionSet()

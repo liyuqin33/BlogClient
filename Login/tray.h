@@ -1,24 +1,28 @@
-#ifndef TRAY_H
+﻿#ifndef TRAY_H
 #define TRAY_H
 
 #include <QSystemTrayIcon>
 #include <QWidget>
 
 class QMenu;
+class Login;
 
 
-class Tray:public QWidget
+class Tray : public QObject
 {
     Q_OBJECT
 public:
-    Tray(QWidget *parent);
+	Tray(QObject *parent = nullptr);
     ~Tray();
     void showHit(const QString &title, const QString &str);
+	void setLoginWidget(Login *loginWidget);
 private:
     void initUnlogn();
+	void initBlogArea();
 
     QSystemTrayIcon *_trayIcon;
     QMenu *_trayIconMenu;
+	Login *_loginWidget;
 public slots:
     void logned();//已登陆响应
 private slots:
