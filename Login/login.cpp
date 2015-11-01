@@ -125,6 +125,7 @@ void Login::loadUser()//加载本地用户
 		AccountItem* accountWidget = new AccountItem(this, item,
 				accountRecord["ID"].toString(),
 				accountRecord["Password"].toString(),
+                accountRecord["PixURL"].toString(),
                 accountRecord["SavePassword"].toBool());
         connect(accountWidget, &AccountItem::showAccount, this, &Login::showAccount);
 		connect(accountWidget, &AccountItem::removeAccount, this, &Login::removeAccount);
@@ -147,11 +148,8 @@ void Login::loadUser()//加载本地用户
 //响应函数
 void Login::clickShowBtn()//点击恢复响应函数
 {
-//	this->showMinimized();
-//	this->raise();//顶置到最顶层，在始终最顶的下面
 	this->showNormal();
-	this->activateWindow();
-//	setFixedSize(300,350);//为了适应系统不同
+    this->activateWindow();
 }
 
 void Login::clickCloseBtn()//点击关闭响应函数
@@ -162,8 +160,7 @@ void Login::clickCloseBtn()//点击关闭响应函数
 
 void Login::clickMinBtn()//点击最小化响应函数
 {
-	this->showMinimized();
-//    setFixedSize(0,0);
+    this->showMinimized();
 }
 
 void Login::userTryLogin(bool isDown)//点击登陆响应函数(登陆或取消登陆)
@@ -172,7 +169,7 @@ void Login::userTryLogin(bool isDown)//点击登陆响应函数(登陆或取消�
     {
         if(_isOldAutoLogin)//自动登录
         {
-			checkLoginMessage(LOG_IN);
+            checkLoginMessage(LOG_IN,"","","");
             return;
         }
         //发送信号给后台(判断是否加密)
@@ -193,8 +190,6 @@ void Login::userTryLogin(bool isDown)//点击登陆响应函数(登陆或取消�
 
         //登陆中界面
         showLoginInterface();
-        //该句调试用-------------------------------------
-        //调试的地方换在timesUp()
     }
     else
     {
@@ -219,12 +214,12 @@ void Login::findPassword()//点击找回密码响应函数
     QDesktopServices::openUrl(url);
 }
 
-void Login::premiseSavePassword(bool isPitchOn)//自动登陆必须记住密码（不会发出信号）
+void Login::premiseSavePassword(bool isAutoLogin)//点击自动登陆单选框响应函数
 {
-	if(isPitchOn) ui->savePasswordBox->setChecked(isPitchOn);
+	if(isAutoLogin) ui->savePasswordBox->setChecked(isAutoLogin);
 }
 
-void Login::changUser(const QString & editUser)//键盘修改用户名称
+void Login::changUser(const QString & editUser)//键盘修改用户名称响应函数
 {
     qDebug()<<editUser<<_listWidget->count();
 
@@ -277,7 +272,7 @@ void Login::removeAccount(QListWidgetItem *item)//删除帐号时，弹出提示
 }
 
 //用户交互-登录中
-void Login::showLoginInterface()
+void Login::showLoginInterface()    //显示登陆界面
 {
     //重新布局
     ui->userNameBox->hide();
@@ -305,10 +300,24 @@ void Login::showLoginInterface()
     _headLine->show();
     //头像图片（100*100）
     _headPix= new QLabel(_headWidget);
-    _headPix->setStyleSheet ("border:1px groove gray;"
-                             "border-radius:50px;"
-                             "background-repeat:no-repeat;"
-                             "background-image: url(:/Image/login/head_nomal.jpg);");
+    if(_listWidget->count()>0)
+    {
+        AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(0));
+        //用户有头像
+        if(ui->userNameBox->lineEdit()->text() == account->getID() && (!account->getPixURL().isEmpty()))
+            _headPix->setStyleSheet ("border:1px groove gray;border-radius:50px;background-repeat:no-repeat;"+
+                                     QString("background-image: url(%1);").arg(account->getPixURL()));
+        else    //默认头像
+            _headPix->setStyleSheet ("border:1px groove gray;"
+                                    "border-radius:50px;"
+                                    "background-repeat:no-repeat;"
+                                    "background-image: url(:/Image/login/head_nomal.jpg);");
+    }
+    else    //默认头像
+        _headPix->setStyleSheet ("border:1px groove gray;"
+                                "border-radius:50px;"
+                                "background-repeat:no-repeat;"
+                                "background-image: url(:/Image/login/head_nomal.jpg);");
     _headPix->setGeometry(10,10,100,100);
     _headPix->show();
     if(_isFlash)//动画
@@ -339,7 +348,7 @@ void Login::showLoginInterface()
 }
 
 
-void Login::endLoginInterface()
+void Login::endLoginInterface() //结束登陆界面
 {
     qDebug()<<"取消登陆";
     //重新布局
@@ -356,7 +365,7 @@ void Login::endLoginInterface()
     ui->loginBtn->setShortcut(QKeySequence::InsertParagraphSeparator);  //更改文本快捷键消失，重设
 }
 
-void Login::timesUp(int time)
+void Login::timesUp(int time)   //登陆时计时器
 {
 	qDebug() << time << endl;
     if(time%2==0) qDebug()<<"第"<<time/20.0<<"秒";
@@ -373,17 +382,17 @@ void Login::timesUp(int time)
     if(time>=200)//时间到，登陆超时
     {
         endLoginInterface();
-		checkLoginMessage(ERROR_UNNET);
+        checkLoginMessage(ERROR_UNNET,"","",":/Image/head1.jpg");
     }
-    //该句调试用！！！！！
+    //该句调试用！！！！！后面的字符串可以写入图片的地址进行调试使用
     if(time >= 60)//三秒
     {
-		checkLoginMessage(LOG_IN);
+        checkLoginMessage(LOG_IN, ui->userNameBox->lineEdit()->text(), ui->passwordEdit->text(), "");
     }
 }
 
 //后台交互
-void Login::checkLoginMessage(LoginMessage type)//后台返回是否能登陆对接的槽函数
+void Login::checkLoginMessage(LoginMessage type, QString accountitem, QString password, QString headPix)//后台返回是否能登陆对接的槽函数
 {
 	disconnect(ui->loginBtn, &QPushButton::toggled, this, &Login::userTryLogin);//断开连接以便按钮弹起
     switch(type)
@@ -398,23 +407,8 @@ void Login::checkLoginMessage(LoginMessage type)//后台返回是否能登陆对
             }
             disconnect(_timeLine, &QTimeLine::frameChanged, this, &Login::timesUp);
 			emit sendMessage("登录成功");
-            addCurrentUser();
+            addCurrentUser(accountitem, password, headPix);
             saveUser(true);
-			/*
-			//关闭渐变
-            if(_isFlash)
-            {
-                //动画
-                QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
-                animation->setDuration(1000);
-                animation->setStartValue(1);
-                animation->setEndValue(0);
-                animation->start();
-                connect(animation, &QPropertyAnimation::finished, this, Login::done);
-            }
-            else
-                this->Login::done();
-			*/
 			emit successfulLogin();
             return;
         }
@@ -440,9 +434,8 @@ void Login::checkLoginMessage(LoginMessage type)//后台返回是否能登陆对
 	}
 }
 
-void Login::addCurrentUser()
+void Login::addCurrentUser(QString user, QString password, QString pixURL)  //添加当前新用户
 {
-	QString user = ui->userNameBox->lineEdit()->text();
 	QListWidgetItem *item = nullptr;
 	for (int i = 0; i != _listWidget->count(); ++i)
 	{
@@ -454,9 +447,8 @@ void Login::addCurrentUser()
 		}
 	}
 	item = new QListWidgetItem();
-	AccountItem *account = new AccountItem(_listWidget, item, user,
-										   ui->passwordEdit->text(),
-										   ui->savePasswordBox->isChecked());
+    AccountItem *account = new AccountItem(_listWidget, item, user, password, pixURL,
+                                           ui->savePasswordBox->isChecked());
 	_listWidget->insertItem(0, item);
 	_listWidget->setItemWidget(item, account);
 }
@@ -465,12 +457,11 @@ void Login::saveUser(bool isSuccessfulLoaded)//添加本地用户
 {
     /*此处应把成功登陆用户存于本地*/
     QVariantList userList;
-    //生成其他json
     for(int i=0; i<_listWidget->count(); i++)
     {
         QVariantMap jsonItem;
         AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(i));
-		saveAccount(jsonItem, account->getID(), account->getPassword(), account->getIsSavePassword());
+        saveAccount(jsonItem, account->getID(), account->getPassword(), account->getPixURL(), account->getIsSavePassword());
 		userList << jsonItem;
     }
     QVariantMap all;
@@ -490,7 +481,8 @@ void Login::saveUser(bool isSuccessfulLoaded)//添加本地用户
     blogInfoFile.open(QIODevice::WriteOnly);
     if (!blogInfoFile.isOpen())
     {
-        QMessageBox::critical(this, "保存文件错误", "保存用户帐号信息失败！");
+        QMessageBox::critical(this, "保存文件错误", "保存用户帐号信息失败！");        
+        sendMessage("保存用户帐号信息失败");
         qDebug() << "写入时没有打开到用户文件";
         return ;
     }
@@ -498,13 +490,16 @@ void Login::saveUser(bool isSuccessfulLoaded)//添加本地用户
 	blogInfoFile.close();
 }
 
-void Login::saveAccount(QVariantMap &item,
+void Login::saveAccount(QVariantMap &item,    //写入时，插入一个用户
                         const QString &id,
                         const QString &password,
+                        const QString &pixURL,
                         bool isSavePassword)
 {
     item.insert("ID", id);
     item.insert("SavePassword", isSavePassword);
+    if (!pixURL.isEmpty())
+        item.insert("PixURL",pixURL);
     if (isSavePassword)
 		item.insert("Password", password);
 }

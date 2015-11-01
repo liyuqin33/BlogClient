@@ -20,21 +20,25 @@ void MessageWidget::initUi()
     _tabWidget->tabBar()->setCursor(Qt::PointingHandCursor);
     _tabWidget->setObjectName("tabWidget");
 
+   QString content("你写的真不错，啊啊啊，呵呵呵，哒哒哒，嚒嚒嚒，哒哒哒，咯咯咯，葛葛葛，还需要改一些方面");
+   QString day(QDateTime::currentDateTime().toString("yy/MM/dd"));
+   QString time(QDateTime::currentDateTime().toString("hh:mm:ss"));
    for(int i = 0 ; i < 30; i++)
    {
        if(i%5 == 0)
        {
-           _firstWidget->addNews(QString("000%1").arg(i), "蝶舞Dre", ":/Image/head1.jpg",
-                                 SPEAK_BLOG, "这篇博客写的真好", "");
-           _secondWidget->addNews(QString("000%1").arg(i), "蝶舞Dre", ":/Image/head1.jpg",
-                                 PRIVATE_SPEAK, "这篇博客写的真好", "");
+           MESSAGE msg = {QString("000%1").arg(i), "蝶舞Dre", ":/Image/head1.jpg", content,
+                          "", "www.baidu.com", day, time, false, GOOD_BLOG};
+
+           _firstWidget->addNews(msg);
+           _secondWidget->addNews(msg);
        }
        else
        {
-           _firstWidget->addNews(QString("000%1").arg(i), "蝶舞Dre", ":/Image/head2.jpg",
-                                 AT_YOU, "哈哈，祝你天天开心", "");
-           _secondWidget->addNews(QString("000%1").arg(i), "蝶舞Dre", ":/Image/head3.jpg",
-                                 PRIVATE_SPEAK, "哈哈，祝你天天开心", "");
+           MESSAGE msg = {QString("000%1").arg(i), "蝶舞Dre", ":/Image/head2.jpg", content,
+                          ":/Image/bg.jpg", "www.baidu.com", day, time, false, GOOD_PIC};
+           _firstWidget->addNews(msg);
+           _secondWidget->addNews(msg);
        }
    }
 

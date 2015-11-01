@@ -8,6 +8,7 @@
 #include <QTabWidget>
 
 #include "statewidget.h"
+#include "message.h"
 
 class MessageWidget : public QWidget
 {

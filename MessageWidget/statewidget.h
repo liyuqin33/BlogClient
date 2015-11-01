@@ -12,6 +12,7 @@
 #include <QLabel>
 
 #include "itemwidget.h"
+#include "message.h"
 
 #define PAGE_COUNT 11
 
@@ -23,10 +24,7 @@ public:
     StateWidget(int allCount, int noReadCount, QWidget *parent = 0);
     ~StateWidget();
     //id, 博主名，图片路径名， 消息类型， 消息内容， 消息url， 是否已读
-    void addNews(QString id, QString name, QString picName, MESSAGE msg, QString content, QString url,
-                 bool isRead = false);
-    void addNews(QString id, QString name, QString picName, MESSAGE msg, QString content, QString url,
-                 QString day, QString time, bool isRead = false);
+    void addNews(MESSAGE msg);
 
 private:
     void initUi();
@@ -34,7 +32,6 @@ private:
     void initConnect();
 
     QPushButton *_noReadBtn;                //未读通知
-    QPushButton *_markBtn;                  //标记为已读
     QPushButton *_clearBtn;                 //清空所有的通知
 
     QWidget *_sWidget;                      //动态更新的widget
@@ -58,7 +55,6 @@ public slots:
     void clickedPreviousBtn();
     void updatePage(int page);
     void clickedNoReadBtn();
-    void clickedMarkBtn();
     void clickedClearBtn();
     void updateNoReadCount();
 

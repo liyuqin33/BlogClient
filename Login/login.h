@@ -74,7 +74,7 @@ public slots:
 	void removeAccount(QListWidgetItem *item);
 //后台交互
 	//! 判断是否登陆
-	void checkLoginMessage(LoginMessage type);
+    void checkLoginMessage(LoginMessage type, QString accountitem, QString password, QString headPix);
 signals:
 	//! 发出登陆信号
 	void tryLogin(QString user,QString password,bool isEncryption);
@@ -82,7 +82,7 @@ signals:
     void unLogining();
 	//! 成功登陆信号
 	void successfulLogin();
-	//!
+    //! 提示警告信号
 	void sendMessage(QString message);
 protected:
 	/*!
@@ -157,13 +157,13 @@ private:
 	 * 如果没有设置保存密码，将不会保存密码
 	 * 下次读取的密码就会为空，所以可以直接设置passwordBox，无需判断
 	 */
-	void saveAccount(QVariantMap &item,
-					 const QString &id,
-					 const QString &password,
+    void saveAccount(QVariantMap &item,
+                     const QString &id,
+                     const QString &password, const QString &pixURL,
                      bool isSavePassword);
 
 	//! 添加登陆成功的用户
-	void addCurrentUser();
+    void addCurrentUser(QString user, QString password, QString pixURL);
 	//! 保存listWidget记录的用户
 	void saveUser(bool checkLoginMessage);
 	//! 显示正在登陆界面

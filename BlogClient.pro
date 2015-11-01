@@ -19,15 +19,16 @@ SOURCES += main.cpp\
     BlogEditArea/CustomFilterModel.cpp \
     BlogEditArea/customlistwidget.cpp \
     BlogEditArea/editview.cpp \
-    MessageWidget/itemwidget.cpp \
-    MessageWidget/piclabel.cpp \
-    MessageWidget/statewidget.cpp \
-    MessageWidget/widget.cpp \
     Login/login.cpp \
     Login/tray.cpp \
 	Login/accountitem.cpp \
 	Login/nofocusframedelegate.cpp \
-	Base/MyUtility.cpp
+	Base/MyUtility.cpp \
+    MessageWidget/itemwidget.cpp \
+    MessageWidget/messagedialog.cpp \
+    MessageWidget/piclabel.cpp \
+    MessageWidget/statewidget.cpp \
+    MessageWidget/widget.cpp
 
 HEADERS  += \
     WebCorrespond/article.h \
@@ -36,15 +37,17 @@ HEADERS  += \
     BlogEditArea/CustomFilterModel.h \
     BlogEditArea/customlistwidget.h \
     BlogEditArea/editview.h \
-    MessageWidget/itemwidget.h \
-    MessageWidget/piclabel.h \
-    MessageWidget/statewidget.h \
-    MessageWidget/widget.h \
     Login/login.h \
     Login/tray.h \
     Login/accountitem.h \
     Login/nofocusframedelegate.h \
-    Base/MyUtility.h
+    Base/MyUtility.h \
+    MessageWidget/itemwidget.h \
+    MessageWidget/message.h \
+    MessageWidget/messagedialog.h \
+    MessageWidget/piclabel.h \
+    MessageWidget/statewidget.h \
+    MessageWidget/widget.h
 
 RESOURCES += \
         BlogClient.qrc

@@ -6,11 +6,12 @@
 #include <QDebug>
 
 AccountItem::AccountItem(QWidget *parent, QListWidgetItem *item,
-						 QString ID, QString password, bool isSavePassword)
+                         QString ID, QString password, QString pixURL, bool isSavePassword)
 	: QWidget(parent)
     , _label(new QLabel(ID))
 	, _item(item)
 	, _password(password)
+    , _pixURL(pixURL)
 	, _isSavePassword(isSavePassword)
 {
 	//初始化
@@ -30,20 +31,6 @@ AccountItem::AccountItem(QWidget *parent, QListWidgetItem *item,
 }
 AccountItem::~AccountItem(){}
 
-//布局函数
-//void AccountItem::setDelBtn(bool isScrollBar)
-//{
-//    if(isScrollBar)
-//    {
-
-//    }
-//    else
-//    {
-
-//    }
-
-//}
-
 //设置和获取
 void AccountItem::setID(QString account_text)    //设置用户ID
 {
@@ -52,6 +39,10 @@ void AccountItem::setID(QString account_text)    //设置用户ID
 void AccountItem::setPassword(QString password)    //设置用户密码
 {
     _password=password;
+}
+void AccountItem::setPixURL(QString pixURL)    //设置用户头像
+{
+    _pixURL=pixURL;
 }
 void AccountItem::setIsSavePassword(bool isAuto)    //设置用户自动登陆
 {
@@ -65,6 +56,10 @@ QString AccountItem::getID()    //获取用户ID
 QString AccountItem::getPassword()    //获取用户密码
 {
 	return _password;
+}
+QString AccountItem::getPixURL()    //获取用户头像
+{
+    return _pixURL;
 }
 bool AccountItem::getIsSavePassword()    //获取用户自动登陆
 {
