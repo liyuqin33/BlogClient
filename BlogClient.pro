@@ -25,9 +25,9 @@ SOURCES += main.cpp\
     MessageWidget/widget.cpp \
     Login/login.cpp \
     Login/tray.cpp \
-    MyUtility.cpp \
-    Login/accountitem.cpp \
-    Login/nofocusframedelegate.cpp
+	Login/accountitem.cpp \
+	Login/nofocusframedelegate.cpp \
+	Base/MyUtility.cpp
 
 HEADERS  += \
     WebCorrespond/article.h \
@@ -42,9 +42,9 @@ HEADERS  += \
     MessageWidget/widget.h \
     Login/login.h \
     Login/tray.h \
-    MyUtility.h \
     Login/accountitem.h \
-    Login/nofocusframedelegate.h
+    Login/nofocusframedelegate.h \
+    Base/MyUtility.h
 
 RESOURCES += \
         BlogClient.qrc

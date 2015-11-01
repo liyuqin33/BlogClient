@@ -78,7 +78,7 @@ bool BlogEditArea::initWidgets()
     _linkWidgetBtn->setCursor(Qt::PointingHandCursor);
     _messageWidget = new MessageWidget(this);
 
-	ui->setupUi(this);
+	ui->setupUi(this);//里面有对this resize！！！
 	initToolBar();
 	initArticleManager();
     ui->toolWidgets->addWidget(_messageWidget);
@@ -151,7 +151,7 @@ void BlogEditArea::waitForWebView()
 	ui->editorArea->show();
 	ui->saveBtn->hide();
 	ui->cancelBtn->hide();
-    this->showMaximized();
+	this->showMaximized();
 }
 
 void BlogEditArea::readInfo()

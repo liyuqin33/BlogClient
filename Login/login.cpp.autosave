@@ -219,9 +219,9 @@ void Login::findPassword()//点击找回密码响应函数
     QDesktopServices::openUrl(url);
 }
 
-void Login::premiseSavePassword(bool isPitchOn)//自动登陆必须记住密码（不会发出信号）
+void Login::premiseSavePassword(bool isAutoLogin)
 {
-	if(isPitchOn) ui->savePasswordBox->setChecked(isPitchOn);
+	if(isAutoLogin) ui->savePasswordBox->setChecked(isAutoLogin);
 }
 
 void Login::changUser(const QString & editUser)//键盘修改用户名称
