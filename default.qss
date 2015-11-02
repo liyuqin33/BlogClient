@@ -126,6 +126,24 @@ QTabWidget::tab-bar
     left: 5px;
 }
 
+QWidget#up_frame
+{
+    background-color: #5789dc;
+}
+QPushButton#closeBtn
+{
+    background-color: #5789dc;
+    border: none;
+}
+QPushButton#closeBtn:hover
+{
+    background-color: red;
+}
+QPushButton#closeBtn:pressed
+{
+    padding-top: 2px;
+}
+
 /************login窗口****************/
 /* 窗口 */
 QWidget#loginWidget{

@@ -52,7 +52,7 @@ void Tray::initBlogArea()
 	w->_splashLabel->setAttribute(Qt::WA_DeleteOnClose);
 	w->_splashLabel->resize(QApplication::desktop()->availableGeometry().size());
 	w->_splashLabel->move(0, 0);
-	w->showMaximized();
+//	w->showMaximized();
 	w->initWidgets();
 }
 
