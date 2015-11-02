@@ -263,8 +263,8 @@ void Login::removeAccount(QListWidgetItem *item)//删除帐号时，弹出提示
 		delete item;
         if (updateItem)//把第一项顶置
 		{
-			AccountItem *firstAccountWidget = (AccountItem*)_listWidget->itemWidget(_listWidget->item(0));
-			ui->userNameBox->setEditText(firstAccountWidget->getID());
+            AccountItem *firstAccountWidget = (AccountItem*)_listWidget->itemWidget(_listWidget->item(0));
+            ui->userNameBox->setEditText(firstAccountWidget->getID());
 			ui->passwordEdit->setText(firstAccountWidget->getPassword());
 			ui->savePasswordBox->setChecked(firstAccountWidget->getIsSavePassword());
 		}
@@ -302,7 +302,7 @@ void Login::showLoginInterface()    //显示登陆界面
     _headPix= new QLabel(_headWidget);
     if(_listWidget->count()>0)
     {
-        AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(0));
+        AccountItem *account = (AccountItem*)_listWidget->itemWidget(_listWidget->item(_listWidget->currentRow()+1));
         //用户有头像
         if(ui->userNameBox->lineEdit()->text() == account->getID() && (!account->getPixURL().isEmpty()))
             _headPix->setStyleSheet ("border:1px groove gray;border-radius:50px;background-repeat:no-repeat;"+
