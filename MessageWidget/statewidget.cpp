@@ -27,37 +27,15 @@ StateWidget::~StateWidget()
 
 }
 
-void StateWidget::addNews(QString id, QString name, QString picName, MESSAGE msg,
-                          QString content, QString url, bool isRead)
+void StateWidget::addNews(MESSAGE msg)
 {
     _allCount++;
 
-    if(!isRead)
+    if(!msg.isRead)
         _noReadCount++;
     //一则消息
-    ItemWidget *itemWidget = new ItemWidget(id, name, picName, msg, content, url);
+    ItemWidget *itemWidget = new ItemWidget(msg);
     itemWidget->hide();
-    itemWidget->setIsRead(isRead);
-    //转发信号
-    connect(itemWidget, SIGNAL(clickBlogOwner(QString)), this, SIGNAL(clickedBlogOwner(QString)));
-    connect(itemWidget, SIGNAL(clickUrl(QString)), this, SIGNAL(clickedUrl(QString)));
-    _itemWidgetList.insert(0, itemWidget);
-
-    updatePage(1);
-    updateNoReadCount();
-}
-
-void StateWidget::addNews(QString id, QString name, QString picName, MESSAGE msg,
-                          QString content, QString url, QString day, QString time, bool isRead)
-{
-    _allCount++;
-
-    if(!isRead)
-        _noReadCount++;
-    //一则消息
-    ItemWidget *itemWidget = new ItemWidget(id, name, picName, msg, content, url, day, time);
-    itemWidget->hide();
-    itemWidget->setIsRead(isRead);
     //转发信号
     connect(itemWidget, SIGNAL(clickBlogOwner(QString)), this, SIGNAL(clickedBlogOwner(QString)));
     connect(itemWidget, SIGNAL(clickUrl(QString)), this, SIGNAL(clickedUrl(QString)));
@@ -71,17 +49,12 @@ void StateWidget::initUi()
 {
     _noReadBtn = new QPushButton(this);
     _noReadBtn->setObjectName(QStringLiteral("noReadBtn"));
-    _noReadBtn->setText(QString("未读通知：%1").arg(_noReadCount));
+    _noReadBtn->setText(QString("未读:%1").arg(_noReadCount));
     _noReadBtn->setCursor(Qt::PointingHandCursor);
-
-    _markBtn = new QPushButton(this);
-    _markBtn->setObjectName(QStringLiteral("markBtn"));
-    _markBtn->setText("全部标记为已读");
-    _markBtn->setCursor(Qt::PointingHandCursor);
 
     _clearBtn = new QPushButton(this);
     _clearBtn->setObjectName(QStringLiteral("clearBtn"));
-    _clearBtn->setText("清空所有的通知");
+    _clearBtn->setText("清空");
     _clearBtn->setCursor(Qt::PointingHandCursor);
 
     _previousBtn = new QPushButton(this);
@@ -107,9 +80,7 @@ void StateWidget::initLayout()
 {
     QHBoxLayout *upLayout = new QHBoxLayout;
     upLayout->addWidget(_noReadBtn);
-    upLayout->addSpacing(10);
-    upLayout->addWidget(_markBtn);
-    upLayout->addSpacing(10);
+    upLayout->addSpacing(5);
     upLayout->addWidget(_clearBtn);
     upLayout->addStretch();
 
@@ -118,11 +89,13 @@ void StateWidget::initLayout()
     downLayout->addWidget(_previousBtn);
     downLayout->addWidget(_nextBtn);
     downLayout->addStretch();
+    downLayout->setContentsMargins(3, 0, 0, 5);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(upLayout);
     mainLayout->addWidget(_sWidget);
     mainLayout->addLayout(downLayout);
+//    mainLayout->setContentsMargins(3, 0, 3, 0);
 
     this->setLayout(mainLayout);
 }
@@ -132,7 +105,6 @@ void StateWidget::initConnect()
     connect(_nextBtn, SIGNAL(clicked()), this, SLOT(clickedNextBtn()));
     connect(_previousBtn, SIGNAL(clicked()), this, SLOT(clickedPreviousBtn()));
     connect(_noReadBtn, SIGNAL(clicked()), this, SLOT(clickedNoReadBtn()));
-    connect(_markBtn, SIGNAL(clicked()), this, SLOT(clickedMarkBtn()));
     connect(_clearBtn, SIGNAL(clicked()), this, SLOT(clickedClearBtn()));
 }
 
@@ -187,19 +159,6 @@ void StateWidget::clickedNoReadBtn()
 
 }
 
-void StateWidget::clickedMarkBtn()
-{
-    if(!_itemWidgetList.isEmpty())
-    {
-        for(int i = 0; i < _itemWidgetList.count(); i++)
-        {
-            _itemWidgetList.at(i)->setIsRead(true);
-        }
-        _noReadCount = 0;
-        updateNoReadCount();
-    }
-}
-
 void StateWidget::clickedClearBtn()
 {
     if(!_itemWidgetList.isEmpty())
@@ -221,7 +180,7 @@ void StateWidget::clickedClearBtn()
 
 void StateWidget::updateNoReadCount()
 {
-    _noReadBtn->setText(QString("未读通知：%1").arg(_noReadCount));
+    _noReadBtn->setText(QString("未读:%1").arg(_noReadCount));
 }
 
 

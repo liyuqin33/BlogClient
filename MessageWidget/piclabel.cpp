@@ -2,7 +2,7 @@
 
 PicLabel::PicLabel(QWidget *parent) : QLabel(parent)
 {
-
+    this->setCursor(Qt::PointingHandCursor);
 }
 
 PicLabel::~PicLabel()

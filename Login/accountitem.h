@@ -12,14 +12,16 @@ class AccountItem:public QWidget    //项目
 {
 	Q_OBJECT
 public:
-	AccountItem(QWidget *parent, QListWidgetItem *item,
-				QString ID, QString password, bool isSavePassword);
+    AccountItem(QWidget *parent, QListWidgetItem *item,
+                QString ID, QString password, QString pixURL, bool isSavePassword);
 	~AccountItem();
 	void setID(QString);    //设置用户ID
-	void setPassword(QString);    //设置用户密码
+	void setPassword(QString);    //设置用户密码    
+    void setPixURL(QString);    //设置用户头像
 	void setIsSavePassword(bool);    //设置用户自动登陆
 	QString getID();    //获取用户ID
 	QString getPassword();    //获取用户密码
+    QString getPixURL();    //获取用户头像
 	bool getIsSavePassword();    //获取用户自动登陆
 private:
 	//布局
@@ -28,6 +30,7 @@ private:
 	//数据
 	QListWidgetItem *_item;
 	QString _password;
+    QString _pixURL;
 	bool _isSavePassword;
 	//判断
 	bool _isMousePress;
